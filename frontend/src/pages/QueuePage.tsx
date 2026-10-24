@@ -1,24 +1,11 @@
-import { BadgeCheck, Clock, Inbox, Layers, Mail, Search, type LucideIcon } from "lucide-react";
+import { BadgeCheck, Clock, Inbox, Layers, Mail, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useApp } from "../api/context";
 import type { Assessment, ReviewStatus } from "../api/types";
 import { CaseTable } from "../components/CaseTable";
 import { UploadPanel } from "../components/UploadPanel";
-import { Card, CardHeader, EmptyState, ErrorNotice, SkeletonRows } from "../components/ui";
+import { Card, CardHeader, EmptyState, ErrorNotice, SkeletonRows, StatTile } from "../components/ui";
 import { useAsync } from "../lib/useAsync";
-
-function StatTile({ label, value, icon: Icon, tone, hint }: { label: string; value: number | null; icon: LucideIcon; tone: string; hint?: string }) {
-  return (
-    <div className={`rounded-2xl p-4 ${tone}`}>
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{label}</p>
-        <Icon className="h-5 w-5 opacity-80" aria-hidden />
-      </div>
-      <p className="mt-2 text-3xl font-semibold tracking-tight">{value ?? "…"}</p>
-      {hint && <p className="mt-0.5 text-xs opacity-75">{hint}</p>}
-    </div>
-  );
-}
 
 export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) {
   const { api, dataVersion } = useApp();
@@ -56,11 +43,11 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
 
       <UploadPanel onOpenCase={onOpenCase} />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Summary">
-        <StatTile label="Total reports" value={data ? stats.total : null} icon={Mail} tone="bg-accent-50 text-accent-700" />
-        <StatTile label="Awaiting review" value={data ? stats.awaiting : null} icon={Clock} tone="bg-amber-50 text-amber-900" />
-        <StatTile label="Related-report groups" value={data ? stats.groups : null} icon={Layers} tone="bg-indigo-50 text-indigo-800" hint="Similar emails" />
-        <StatTile label="Reviewed cases" value={data ? stats.reviewed : null} icon={BadgeCheck} tone="bg-teal-50 text-teal-800" />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Summary">
+        <StatTile label="Total reports" value={data ? stats.total : null} pending={!data} icon={Mail} tone="blue" />
+        <StatTile label="Awaiting review" value={data ? stats.awaiting : null} pending={!data} icon={Clock} tone="amber" />
+        <StatTile label="Related-report groups" value={data ? stats.groups : null} pending={!data} icon={Layers} tone="indigo" hint="Similar emails" />
+        <StatTile label="Reviewed cases" value={data ? stats.reviewed : null} pending={!data} icon={BadgeCheck} tone="teal" />
       </div>
 
       <Card aria-labelledby="cases-title">
@@ -71,12 +58,12 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
             <div className="relative mt-1">
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" aria-hidden />
               <input id="case-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-sm" />
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm transition-colors focus:bg-white" />
             </div>
           </div>
           <div>
             <label htmlFor="f-assess" className="block text-xs font-medium text-slate-600">Assessment</label>
-            <select id="f-assess" value={assessment} onChange={(e) => setAssessment(e.target.value as typeof assessment)} className="mt-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <select id="f-assess" value={assessment} onChange={(e) => setAssessment(e.target.value as typeof assessment)} className="mt-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
               <option value="all">All</option>
               <option value="suspicious">Suspicious</option>
               <option value="likely_benign">Likely benign</option>
@@ -85,7 +72,7 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
           </div>
           <div>
             <label htmlFor="f-review" className="block text-xs font-medium text-slate-600">Review status</label>
-            <select id="f-review" value={review} onChange={(e) => setReview(e.target.value as typeof review)} className="mt-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <select id="f-review" value={review} onChange={(e) => setReview(e.target.value as typeof review)} className="mt-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
               <option value="all">All</option>
               <option value="unreviewed">Unreviewed</option>
               <option value="reviewed">Reviewed</option>

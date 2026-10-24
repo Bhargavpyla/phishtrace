@@ -1,4 +1,4 @@
-import { Check, ChevronDown, CircleAlert, Copy, Loader2, X } from "lucide-react";
+import { Check, ChevronDown, CircleAlert, Copy, Loader2, X, type LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 export function Card({ children, className = "", as: Tag = "section", ...rest }: {
@@ -114,7 +114,7 @@ export function Disclosure({ title, children, defaultOpen = false }: { title: Re
 /** Accessible tabs (arrow keys, Home/End). Only the active panel is rendered, which keeps pages short. */
 export function Tabs({ label, tabs, active, onChange }: {
   label: string;
-  tabs: { id: string; label: string; badge?: string | number; attention?: boolean }[];
+  tabs: { id: string; label: string; badge?: string | number; attention?: boolean; icon?: LucideIcon }[];
   active: string;
   onChange: (id: string) => void;
 }) {
@@ -127,15 +127,17 @@ export function Tabs({ label, tabs, active, onChange }: {
     document.getElementById(`tab-${tabs[next].id}`)?.focus();
   }
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-200/60 p-1">
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200/70 bg-white/70 p-1 shadow-card backdrop-blur">
       {tabs.map((t, i) => {
         const on = t.id === active;
+        const Icon = t.icon;
         return (
           <button key={t.id} id={`tab-${t.id}`} role="tab" type="button" aria-selected={on} aria-controls={`panel-${t.id}`}
             tabIndex={on ? 0 : -1} onClick={() => onChange(t.id)} onKeyDown={(e) => onKey(e, i)}
-            className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-medium transition-colors ${on ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-medium transition-colors ${on ? "bg-navy-900 text-white shadow-md" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
+            {Icon && <Icon className={`h-4 w-4 ${on ? "text-teal-100" : "text-slate-400"}`} aria-hidden />}
             {t.label}
-            {t.badge !== undefined && <span className={`rounded-full px-1.5 text-xs ${t.attention ? "bg-amber-200 text-amber-950" : "bg-slate-200 text-slate-700"}`}>{t.badge}</span>}
+            {t.badge !== undefined && <span className={`rounded-full px-1.5 text-xs ${t.attention ? "bg-amber-300 text-amber-950" : on ? "bg-white/15 text-white" : "bg-slate-200 text-slate-700"}`}>{t.badge}</span>}
           </button>
         );
       })}
@@ -143,15 +145,47 @@ export function Tabs({ label, tabs, active, onChange }: {
   );
 }
 
-const AVATAR_TONES = ["bg-accent-100 text-accent-700", "bg-teal-100 text-teal-800", "bg-amber-100 text-amber-900", "bg-indigo-100 text-indigo-800", "bg-rose-100 text-rose-800"];
+const TILE_TONES = {
+  blue: { tile: "from-accent-50 border-accent-100", bubble: "bg-accent-600 shadow-accent-600/30", value: "text-accent-700" },
+  amber: { tile: "from-amber-50 border-amber-100", bubble: "bg-amber-500 shadow-amber-500/30", value: "text-amber-800" },
+  indigo: { tile: "from-indigo-50 border-indigo-100", bubble: "bg-indigo-500 shadow-indigo-500/30", value: "text-indigo-800" },
+  teal: { tile: "from-teal-50 border-teal-100", bubble: "bg-teal-600 shadow-teal-600/30", value: "text-teal-800" },
+  slate: { tile: "from-slate-50 border-slate-200", bubble: "bg-navy-800 shadow-navy-900/30", value: "text-slate-900" },
+} as const;
+
+/**
+ * Summary number with an icon bubble. `value === null` renders "Not measured" (dashed) unless `pending`,
+ * which shows a placeholder while data loads. Values are never invented.
+ */
+export function StatTile({ label, value, icon: Icon, tone = "blue", hint, pending }: {
+  label: string; value: number | string | null; icon: LucideIcon; tone?: keyof typeof TILE_TONES; hint?: string; pending?: boolean;
+}) {
+  const t = TILE_TONES[tone];
+  const unmeasured = value === null && !pending;
+  return (
+    <div className={`flex items-center gap-4 rounded-2xl border p-4 ${unmeasured ? "border-dashed border-slate-300 bg-slate-50" : `bg-gradient-to-br to-white shadow-card ${t.tile}`}`}>
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white shadow-lg ${unmeasured ? "bg-slate-300 shadow-none" : t.bubble}`}>
+        <Icon className="h-5 w-5" aria-hidden />
+      </span>
+      <div className="min-w-0">
+        <p className={`font-semibold tracking-tight ${unmeasured ? "text-lg text-slate-500" : `text-2xl ${t.value}`}`}>{unmeasured ? "Not measured" : value ?? "…"}</p>
+        <p className="text-sm text-slate-600">{label}</p>
+        {hint && <p className="text-xs text-slate-500">{hint}</p>}
+      </div>
+    </div>
+  );
+}
+
+const AVATAR_TONES =["bg-accent-100 text-accent-700", "bg-teal-100 text-teal-800", "bg-amber-100 text-amber-900", "bg-indigo-100 text-indigo-800", "bg-rose-100 text-rose-800"];
 
 /** Initials avatar for a sender such as `"IT Support" <it@x.example>`. */
-export function Avatar({ sender }: { sender: string }) {
+export function Avatar({ sender, size = "md" }: { sender: string; size?: "md" | "lg" }) {
   const name = (sender.split("<")[0].replace(/["']/g, "").trim() || sender.split("@")[0] || "?");
   const parts = name.split(/[\s._-]+/).filter(Boolean);
   const initials = ((parts[0]?.[0] ?? "?") + (parts[1]?.[0] ?? "")).toUpperCase();
   const tone = AVATAR_TONES[[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % AVATAR_TONES.length];
-  return <span aria-hidden className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${tone}`}>{initials}</span>;
+  const dims = size === "lg" ? "h-12 w-12 text-base ring-4 ring-white shadow-card" : "h-9 w-9 text-xs";
+  return <span aria-hidden className={`flex shrink-0 items-center justify-center rounded-full font-semibold ${dims} ${tone}`}>{initials}</span>;
 }
 
 /** Copies text to the clipboard. Used for URLs, which are never rendered as links. */

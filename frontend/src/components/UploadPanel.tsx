@@ -120,7 +120,7 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
               A saved email, up to 1 MB. It is read as text: links are never opened and attachments are never run.
             </p>
           </div>
-          <Button variant="primary" onClick={() => inputRef.current?.click()} disabled={running}>Browse files</Button>
+          <Button variant="primary" data-upload-browse onClick={() => inputRef.current?.click()} disabled={running}>Browse files</Button>
           <input ref={inputRef} type="file" multiple accept=".eml,message/rfc822" className="hidden" tabIndex={-1} aria-label="Choose .eml files"
             onChange={(e) => { if (e.target.files) add(e.target.files); e.target.value = ""; }} />
         </div>
