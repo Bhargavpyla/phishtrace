@@ -56,7 +56,7 @@ export function EvidenceLedger({ evidence, openIds, highlightedId, onToggle, onO
   return (
     <Card aria-labelledby="ledger-title" className="overflow-hidden">
       <CardHeader id="ledger-title" title="Supporting evidence"
-        subtitle={`${evidence.length} observations${reused ? ` · ${reused} reused from earlier cases` : ""}. A citation shows where something came from; it doesn’t prove a conclusion on its own.`} />
+        subtitle={`${evidence.length} observations${reused ? ` · ${reused} reused from earlier cases` : ""}. Each one shows where it came from.`} />
       {evidence.length === 0 ? (
         <EmptyState title="No evidence recorded">Nothing was extracted from this email.</EmptyState>
       ) : (

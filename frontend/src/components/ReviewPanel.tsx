@@ -51,10 +51,10 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
   return (
     <Card aria-labelledby="review-title" className="overflow-hidden">
       <CardHeader id="review-title" title="What needs your review" icon={<UserCheck className="h-4 w-4" aria-hidden />}
-        subtitle="Confirm or change the proposal. The original is always kept next to your decision." />
+        subtitle="Accept or change the proposal. The original is always kept." />
       <div className="space-y-4 px-5 pb-5">
         {source === "demo" && (
-          <Notice tone="warn"><FlaskConical className="mr-1 inline h-3.5 w-3.5" aria-hidden />Demo-only: reviews are saved in this browser, not sent to a backend.</Notice>
+          <Notice tone="warn"><FlaskConical className="mr-1 inline h-3.5 w-3.5" aria-hidden />Demo only: saved in this browser, not sent anywhere.</Notice>
         )}
 
         <dl className="grid grid-cols-[auto,1fr] items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 p-3 text-sm">

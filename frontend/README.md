@@ -10,7 +10,7 @@ cd frontend
 npm install
 npm run dev          # http://localhost:5173, starts in Demo mode
 npm run typecheck    # tsc --noEmit
-npm test             # vitest + Testing Library (25 interaction tests)
+npm test             # vitest + Testing Library (27 interaction tests)
 npm run build        # typecheck + production build into dist/
 ```
 For live data start the API (`uvicorn api:create_app --factory --host 127.0.0.1 --port 8000`), set `VITE_API_BASE_URL` in `.env.local`
@@ -23,7 +23,7 @@ Three destinations: **Investigations** (upload, summary, recent investigations, 
 ## Layout
 - `src/api/types.ts` entities and the `Api` interface · `live.ts` HTTP adapter · `demo.ts` + `fixtures.ts` demo adapter · `context.tsx` source/health/policy state
 - `src/components/` Badges (status chips with icon + text), UploadPanel (stepper, drag-and-drop, real elapsed-time status), CaseTable,
-  AssessmentCard, FindingsList, EvidenceLedger, RelatedComparison (side by side), ReviewPanel, ToolActivity, ui (Card, Button, Skeleton, Disclosure, …)
+  VerdictCard, FindingsList, EvidenceLedger, RelatedComparison (three cards), ReviewPanel, ToolActivity, ui (Card, Button, Tabs, Avatar, Skeleton, Disclosure, …)
 - `src/pages/` QueuePage (Investigations), CasePage, RelatedPage, ImpactPage
 - `docs/FRONTEND_API.md` backend contract, what is implemented, and what is not supported yet
 
@@ -39,11 +39,11 @@ Three destinations: **Investigations** (upload, summary, recent investigations, 
 
 ## Demo walkthrough (about 3 minutes)
 1. **Investigations**: the upload card with its four-step flow sits first. Below it are the summary tiles and the searchable table. Filter by *Needs review*.
-2. **C-101** (reviewed, suspicious): the assessment card explains the result in plain language. *Why it was flagged* lists findings; select an evidence ID (E4) to expand its source inline. Technical detail (tool activity) stays collapsed. URLs are text with a Copy button.
-3. **C-102**: the comparison shows what matches the reviewed case, three evidence rows *reused* (each links to C-101), and a *Fresh check required* for the changed authentication header.
-4. **C-103**: same pattern, but the *Changed destination* is highlighted side by side with the old one. Nothing is reused and fresh checks are listed. Similarity is never treated as safety.
+2. **C-101** (reviewed, suspicious): one verdict card explains the result in plain language with its top three reasons. The tabs (*Why flagged*, *Evidence*, *Compare*, *Email*, *Activity*) show one section at a time; select an evidence ID (E4) to expand its source inline. URLs are text with a Copy button.
+3. **C-102**: the verdict card says it is similar to the reviewed C-101; press *Compare* for three plain cards: *Same as before* (three reused evidence rows, each linking to C-101), *Different now*, and *Check again* (a *Fresh check required* for the changed authentication header).
+4. **C-103**: same pattern, but the *Changed destination* is highlighted with before and now. Nothing is reused and fresh checks are listed. Similarity is never treated as safety.
 5. **Review** C-102 under *What needs your review*: accept, or change the assessment with a required note. The original proposal stays beside the reviewed decision; history is expandable and labelled *Demo-only*. Download the report.
 6. **Related reports**: the group and why it was grouped; open a later report to compare.
 7. **C-105**: rules-only fallback, no tool events, gaps listed. **C-104**: benign, explicitly "not a guarantee of safety".
-8. **Review & impact**: system runtime and analyst time are separate; unmeasured values read "Not measured". Try the calculator (negative savings are shown).
+8. **Review & impact**: headline numbers first; system runtime and analyst time are separate and unmeasured values read "Not measured". The calculator is collapsed under *Estimate time saved* (negative savings are shown).
 9. Switch to **Live backend** with the API stopped: it reports "Backend not connected" and shows errors rather than mock data.

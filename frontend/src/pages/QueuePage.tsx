@@ -51,7 +51,7 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Investigations</h1>
-        <p className="mt-1 text-sm text-slate-600">Upload a suspicious email, review what the evidence shows, then record your decision.</p>
+        <p className="mt-1 text-sm text-slate-600">Check a suspicious email, see why it was flagged, then record your decision.</p>
       </div>
 
       <UploadPanel onOpenCase={onOpenCase} />
@@ -59,12 +59,12 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Summary">
         <StatTile label="Total reports" value={data ? stats.total : null} icon={Mail} tone="bg-accent-50 text-accent-700" />
         <StatTile label="Awaiting review" value={data ? stats.awaiting : null} icon={Clock} tone="bg-amber-50 text-amber-900" />
-        <StatTile label="Related-report groups" value={data ? stats.groups : null} icon={Layers} tone="bg-indigo-50 text-indigo-800" hint="Similarity groupings" />
+        <StatTile label="Related-report groups" value={data ? stats.groups : null} icon={Layers} tone="bg-indigo-50 text-indigo-800" hint="Similar emails" />
         <StatTile label="Reviewed cases" value={data ? stats.reviewed : null} icon={BadgeCheck} tone="bg-teal-50 text-teal-800" />
       </div>
 
       <Card aria-labelledby="cases-title">
-        <CardHeader id="cases-title" title="Recent investigations" subtitle="Assessment is the proposal; review status shows whether a person has confirmed it." />
+        <CardHeader id="cases-title" title="Recent investigations" subtitle="The assessment is a proposal until a person reviews it." />
         <div className="flex flex-wrap items-end gap-3 px-5 pb-4">
           <div className="min-w-[14rem] flex-1">
             <label htmlFor="case-search" className="block text-xs font-medium text-slate-600">Search subject, sender or case ID</label>
@@ -98,7 +98,7 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
           {error && <div className="p-5"><ErrorNotice title="Could not load investigations" message={error} onRetry={reload} /></div>}
           {!loading && !error && cases.length === 0 && (
             <EmptyState icon={<Inbox className="h-7 w-7" aria-hidden />} title="No investigations yet">
-              Upload your first reported email above. Once it’s investigated, it appears here with its evidence and a proposed assessment.
+              Upload an email above to get started. Each investigation appears here.
             </EmptyState>
           )}
           {!loading && !error && cases.length > 0 && filtered.length === 0 && (

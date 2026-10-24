@@ -13,9 +13,9 @@ export const MODE_LABEL: Record<ExecutionMode, string> = {
 };
 
 export const FINDING_TYPE_LABEL: Record<FindingType, string> = {
-  observed_fact: "Observed fact",
-  policy_guidance: "Policy guidance",
-  model_interpretation: "Model interpretation",
+  observed_fact: "Observed",
+  policy_guidance: "Playbook guidance",
+  model_interpretation: "AI interpretation",
 };
 
 /** The Python backend uses its own label vocabulary; accept either. */

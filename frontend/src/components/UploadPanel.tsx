@@ -1,8 +1,8 @@
-import { CircleAlert, CircleCheck, FileText, Loader2, MailPlus, RotateCcw, Upload, X } from "lucide-react";
+import { CircleAlert, CircleCheck, FileText, Loader2, RotateCcw, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { useApp } from "../api/context";
 import { validateEml } from "../lib/format";
-import { Button, Card, Notice } from "./ui";
+import { Button } from "./ui";
 
 type ItemStatus = "queued" | "uploading" | "done" | "failed";
 interface Item {
@@ -20,18 +20,18 @@ let seq = 0;
 
 function Stepper({ current }: { current: number }) {
   return (
-    <ol className="flex flex-wrap items-center gap-x-2 gap-y-2" aria-label="Investigation steps">
+    <ol className="flex flex-wrap items-center gap-x-1 gap-y-2" aria-label="Investigation steps">
       {STEPS.map((s, i) => {
         const n = i + 1;
         const state = n < current ? "done" : n === current ? "current" : "todo";
         return (
           <li key={s} aria-current={state === "current" ? "step" : undefined} className="flex items-center gap-2">
             <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-              state === "done" ? "bg-teal-600 text-white" : state === "current" ? "bg-accent-600 text-white" : "bg-slate-200 text-slate-600"}`}>
+              state === "done" ? "bg-teal-100 text-teal-800" : state === "current" ? "bg-white text-navy-900" : "bg-white/15 text-slate-200"}`}>
               {state === "done" ? <CircleCheck className="h-4 w-4" aria-hidden /> : n}
             </span>
-            <span className={`text-sm ${state === "todo" ? "text-slate-500" : "font-medium text-slate-900"}`}>{s}</span>
-            {n < STEPS.length && <span aria-hidden className="mx-1 hidden h-px w-6 bg-slate-300 sm:block" />}
+            <span className={`text-sm ${state === "todo" ? "text-slate-300" : "font-medium text-white"}`}>{s}</span>
+            {n < STEPS.length && <span aria-hidden className="mx-1 hidden h-px w-5 bg-white/25 sm:block" />}
           </li>
         );
       })}
@@ -74,7 +74,7 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
   const failedAfterRun = items.filter((i) => i.status === "failed" && !i.invalid);
   const doneItems = items.filter((i) => i.status === "done");
   const active = items.find((i) => i.status === "uploading");
-  const step = running ? 2 : items.length > 0 ? 2 : 1;
+  const step = items.length > 0 || running ? 2 : 1;
 
   async function investigate() {
     if (running) return;   // prevents duplicate submissions
@@ -98,39 +98,35 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
     : <>Start investigation{runnable.length > 1 ? ` (${runnable.length} files)` : ""}</>;
 
   return (
-    <Card aria-labelledby="upload-title" className="overflow-hidden">
-      <div className="border-b border-slate-100 bg-gradient-to-r from-accent-50/70 to-teal-50/60 px-5 py-4">
-        <div className="mb-3 flex items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-teal-700 shadow-sm"><MailPlus className="h-5 w-5" aria-hidden /></span>
-          <div>
-            <h2 id="upload-title" className="text-lg font-semibold text-slate-900">Investigate an email</h2>
-            <p className="text-sm text-slate-600">Upload a reported email and PhishTrace gathers the evidence for you to review.</p>
-          </div>
-        </div>
-        <Stepper current={step} />
+    <section aria-labelledby="upload-title" className="overflow-hidden rounded-3xl bg-gradient-to-br from-navy-900 via-navy-800 to-accent-700 shadow-lift">
+      <div className="px-6 pb-4 pt-6 text-white sm:px-8 sm:pt-8">
+        <h2 id="upload-title" className="text-2xl font-semibold tracking-tight">Investigate an email</h2>
+        <p className="mt-1 max-w-xl text-sm text-slate-200">Upload a suspicious email. PhishTrace gathers the evidence so you can decide what to do.</p>
+        <div className="mt-4"><Stepper current={step} /></div>
       </div>
 
-      <div className="space-y-4 p-5">
+      <div className="space-y-4 rounded-t-3xl bg-white p-5 sm:p-6">
         <div
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
           data-testid="dropzone"
-          className={`rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors ${dragging ? "border-teal-600 bg-teal-50" : "border-slate-300 bg-slate-50/70"}`}
+          className={`flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors sm:flex-row sm:text-left ${dragging ? "border-teal-600 bg-teal-50" : "border-slate-300 bg-slate-50/70"}`}
         >
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-teal-700 shadow-sm"><Upload className="h-6 w-6" aria-hidden /></span>
-          <p className="mt-3 text-sm font-medium text-slate-800">Drag and drop an .eml file here</p>
-          <p className="mt-0.5 text-sm text-slate-500">or</p>
-          <Button className="mt-2" onClick={() => inputRef.current?.click()} disabled={running}>Browse files</Button>
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-700"><Upload className="h-7 w-7" aria-hidden /></span>
+          <div className="flex-1">
+            <p className="text-base font-semibold text-slate-900">Drag and drop an .eml file here</p>
+            <p className="text-sm text-slate-500">
+              A saved email, up to 1 MB. It is read as text: links are never opened and attachments are never run.
+            </p>
+          </div>
+          <Button variant="primary" onClick={() => inputRef.current?.click()} disabled={running}>Browse files</Button>
           <input ref={inputRef} type="file" multiple accept=".eml,message/rfc822" className="hidden" tabIndex={-1} aria-label="Choose .eml files"
             onChange={(e) => { if (e.target.files) add(e.target.files); e.target.value = ""; }} />
-          <p className="mx-auto mt-3 max-w-md text-xs text-slate-500">
-            Supported: <code>.eml</code> files (a saved email, up to 1 MB). The email is read as text. Links are never opened and attachments are never run.
-          </p>
         </div>
 
         {source === "demo" && (
-          <Notice tone="warn">Demo data is on: uploads are checked here but not analysed. Switch to “Live backend” in the top bar to investigate real emails, or open a sample case below.</Notice>
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-950">Demo data is on, so uploads are checked but not analysed. Open a sample case below, or switch to “Live backend”.</p>
         )}
 
         {items.length > 0 && (
@@ -166,8 +162,8 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
           <p role="status" className="flex items-start gap-2 rounded-xl bg-accent-50 px-3 py-2 text-sm text-accent-700">
             <Loader2 className="mt-0.5 h-4 w-4 shrink-0 animate-spin" aria-hidden />
             <span>
-              Investigating {active?.file.name ?? "your email"}… {elapsed}s elapsed. The backend runs the whole investigation during this request,
-              so step-by-step progress isn’t available. This can take up to a minute.
+              Investigating {active?.file.name ?? "your email"}… {elapsed}s elapsed. This can take up to a minute; the backend
+              doesn’t report step-by-step progress.
             </span>
           </p>
         )}
@@ -183,6 +179,6 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
           {items.length === 0 && <span className="text-xs text-slate-500">Choose a file to enable “Start investigation”.</span>}
         </div>
       </div>
-    </Card>
+    </section>
   );
 }

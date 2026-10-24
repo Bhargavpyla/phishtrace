@@ -111,6 +111,49 @@ export function Disclosure({ title, children, defaultOpen = false }: { title: Re
   );
 }
 
+/** Accessible tabs (arrow keys, Home/End). Only the active panel is rendered, which keeps pages short. */
+export function Tabs({ label, tabs, active, onChange }: {
+  label: string;
+  tabs: { id: string; label: string; badge?: string | number; attention?: boolean }[];
+  active: string;
+  onChange: (id: string) => void;
+}) {
+  function onKey(e: React.KeyboardEvent, i: number) {
+    const next = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i - 1 + tabs.length) % tabs.length
+      : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+    if (next < 0) return;
+    e.preventDefault();
+    onChange(tabs[next].id);
+    document.getElementById(`tab-${tabs[next].id}`)?.focus();
+  }
+  return (
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-200/60 p-1">
+      {tabs.map((t, i) => {
+        const on = t.id === active;
+        return (
+          <button key={t.id} id={`tab-${t.id}`} role="tab" type="button" aria-selected={on} aria-controls={`panel-${t.id}`}
+            tabIndex={on ? 0 : -1} onClick={() => onChange(t.id)} onKeyDown={(e) => onKey(e, i)}
+            className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-medium transition-colors ${on ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}>
+            {t.label}
+            {t.badge !== undefined && <span className={`rounded-full px-1.5 text-xs ${t.attention ? "bg-amber-200 text-amber-950" : "bg-slate-200 text-slate-700"}`}>{t.badge}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const AVATAR_TONES = ["bg-accent-100 text-accent-700", "bg-teal-100 text-teal-800", "bg-amber-100 text-amber-900", "bg-indigo-100 text-indigo-800", "bg-rose-100 text-rose-800"];
+
+/** Initials avatar for a sender such as `"IT Support" <it@x.example>`. */
+export function Avatar({ sender }: { sender: string }) {
+  const name = (sender.split("<")[0].replace(/["']/g, "").trim() || sender.split("@")[0] || "?");
+  const parts = name.split(/[\s._-]+/).filter(Boolean);
+  const initials = ((parts[0]?.[0] ?? "?") + (parts[1]?.[0] ?? "")).toUpperCase();
+  const tone = AVATAR_TONES[[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % AVATAR_TONES.length];
+  return <span aria-hidden className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${tone}`}>{initials}</span>;
+}
+
 /** Copies text to the clipboard. Used for URLs, which are never rendered as links. */
 export function CopyButton({ text, label }: { text: string; label: string }) {
   const [done, setDone] = useState(false);
