@@ -1,10 +1,10 @@
-import { BadgeCheck, Clock, Inbox, Layers, Mail, Search } from "lucide-react";
+import { BadgeCheck, Clock, Inbox, Layers, Mail, Search, type LucideIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useApp } from "../api/context";
 import type { Assessment, ReviewStatus } from "../api/types";
 import { CaseTable } from "../components/CaseTable";
 import { UploadPanel } from "../components/UploadPanel";
-import { Card, CardHeader, EmptyState, ErrorNotice, SkeletonRows, StatTile } from "../components/ui";
+import { Card, CardHeader, EmptyState, ErrorNotice, SkeletonRows } from "../components/ui";
 import { useAsync } from "../lib/useAsync";
 
 function StatTile({
