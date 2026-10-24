@@ -133,10 +133,30 @@ describe("upload against a live backend", () => {
   });
 });
 
+describe("sidebar", () => {
+  it("shows live counts on navigation and a review progress card from real data", async () => {
+    setup();
+    expect(await screen.findByRole("button", { name: "Investigations, 4 awaiting review" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Related reports, 1 group" })).toBeInTheDocument();
+    const bar = screen.getByRole("progressbar", { name: "Cases reviewed" });
+    expect(bar).toHaveAttribute("aria-valuenow", "1");
+    expect(bar).toHaveAttribute("aria-valuemax", "5");
+    expect(screen.getByText(/4 waiting for a person to review/)).toBeInTheDocument();
+  });
+
+  it("New investigation returns to the upload card from anywhere", async () => {
+    const { user } = setup();
+    await user.click(screen.getByRole("button", { name: "Review & impact" }));
+    await screen.findByRole("heading", { name: "At a glance" });
+    await user.click(screen.getByRole("button", { name: "New investigation" }));
+    expect(await screen.findByRole("heading", { name: "Investigate an email" })).toBeInTheDocument();
+  });
+});
+
 describe("related reports page", () => {
   it("lists groups with why they were grouped, without claiming a campaign", async () => {
     const { user } = setup();
-    await user.click(screen.getByRole("button", { name: "Related reports" }));
+    await user.click(screen.getByRole("button", { name: /^Related reports/ }));
     expect(await screen.findByRole("heading", { name: /Group G-1 · 3 related reports/ })).toBeInTheDocument();
     expect(screen.getByText(/Why grouped:/).closest("p")).toHaveTextContent(/Shared sender domain acme-corp-login\.example/);
     expect(screen.getByText(/not confirmed attack campaigns/)).toBeInTheDocument();
@@ -145,7 +165,7 @@ describe("related reports page", () => {
 
   it("opens a later report with a prompt to compare it", async () => {
     const { user } = setup();
-    await user.click(screen.getByRole("button", { name: "Related reports" }));
+    await user.click(screen.getByRole("button", { name: /^Related reports/ }));
     await user.click(await screen.findByRole("button", { name: /^Open case C-103:/ }));
     expect(await screen.findByRole("heading", { name: "Your AcmeCorp mailbox will be suspended" })).toBeInTheDocument();
     expect(await screen.findByText(/a case a person already reviewed/)).toHaveTextContent("C-101");

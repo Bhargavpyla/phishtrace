@@ -1,8 +1,8 @@
-import { Layers } from "lucide-react";
+import { Info, Layers } from "lucide-react";
 import { useApp } from "../api/context";
 import type { CaseSummary } from "../api/types";
 import { AssessmentBadge, ReviewBadge } from "../components/Badges";
-import { Button, Card, EmptyState, ErrorNotice, Notice, SkeletonRows } from "../components/ui";
+import { Button, Card, EmptyState, ErrorNotice, SkeletonRows } from "../components/ui";
 import { formatTime, orDash } from "../lib/format";
 import { useAsync } from "../lib/useAsync";
 
@@ -31,7 +31,10 @@ export function RelatedPage({ onOpenCase }: { onOpenCase: (id: string) => void }
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Related reports</h1>
         <p className="mt-1 text-sm text-slate-600">Reports that share a sender, destination or wording. Open a later report to compare it with the earlier reviewed one.</p>
       </div>
-      <Notice>Related reports are similarity groupings, not confirmed attack campaigns. Similar wording does not make an email safe, and an earlier verdict is never copied automatically.</Notice>
+      <p className="flex items-start gap-2 rounded-2xl border border-indigo-100 bg-indigo-50/70 px-4 py-3 text-sm text-indigo-950">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600" aria-hidden />
+        Related reports are similarity groupings, not confirmed attack campaigns. Similar wording does not make an email safe, and an earlier verdict is never copied automatically.
+      </p>
 
       {loading && <Card><SkeletonRows rows={3} label="Loading related reports…" /></Card>}
       {error && <ErrorNotice title="Could not load related reports" message={error} onRetry={reload} />}
@@ -45,19 +48,22 @@ export function RelatedPage({ onOpenCase }: { onOpenCase: (id: string) => void }
         </Card>
       )}
       {!loading && !error && groups.map((g) => (
-        <Card key={g.id} aria-labelledby={`group-${g.id}`}>
-          <div className="px-5 pt-5">
-            <h2 id={`group-${g.id}`} className="flex items-center gap-2 text-base font-semibold text-slate-900">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700"><Layers className="h-4 w-4" aria-hidden /></span>
-              Group {g.id} · {g.members.length} related reports
-            </h2>
-            {g.reason && <p className="mt-2 text-sm text-slate-600"><span className="font-medium text-slate-800">Why grouped:</span> {g.reason}</p>}
+        <Card key={g.id} aria-labelledby={`group-${g.id}`} className="overflow-hidden">
+          <div className="flex items-start gap-4 bg-gradient-to-r from-indigo-50 via-white to-white px-5 py-5">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-500 text-white shadow-lg shadow-indigo-500/30"><Layers className="h-5 w-5" aria-hidden /></span>
+            <div className="min-w-0">
+              <h2 id={`group-${g.id}`} className="text-base font-semibold text-slate-900">Group {g.id} · {g.members.length} related reports</h2>
+              {g.reason && <p className="mt-1 text-sm text-slate-600"><span className="font-medium text-slate-800">Why grouped:</span> {g.reason}</p>}
+            </div>
           </div>
-          <ol className="mt-4 divide-y divide-slate-100 border-t border-slate-100">
+          {/* timeline: earliest report first, a line joins the related reports */}
+          <ol className="relative border-t border-slate-100 py-2">
+            <span aria-hidden className="absolute bottom-6 left-[2.05rem] top-6 hidden w-0.5 rounded-full bg-indigo-100 sm:block" />
             {g.members.map((m, i) => (
               /* fixed columns so badges and buttons line up from row to row */
-              <li key={m.id} className="grid items-center gap-x-4 gap-y-2 px-5 py-3 sm:grid-cols-[1.5rem_minmax(0,1fr)_8.5rem_7.5rem_10rem]">
-                <span className="hidden text-xs text-slate-500 sm:block">{i + 1}.</span>
+              <li key={m.id} className="relative grid items-center gap-x-4 gap-y-2 px-5 py-3 sm:grid-cols-[1.75rem_minmax(0,1fr)_8.5rem_7.5rem_10rem]">
+                <span aria-hidden className={`relative z-10 hidden h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ring-4 ring-white sm:flex ${
+                  m.reviewStatus === "reviewed" ? "bg-teal-600 text-white" : "bg-slate-200 text-slate-700"}`}>{i + 1}</span>
                 <div className="min-w-0">
                   <p className="wrap-any text-sm font-medium text-slate-900">{orDash(m.subject, "(no subject)")}</p>
                   <p className="wrap-any text-xs text-slate-500">{m.id} · {orDash(m.sender)} · {formatTime(m.receivedAt)}</p>

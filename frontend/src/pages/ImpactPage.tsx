@@ -1,25 +1,12 @@
-import { BadgeCheck, Clock, FlaskConical, Layers, Mail, RefreshCw, Trash2, type LucideIcon } from "lucide-react";
+import { Activity, BadgeCheck, Clock, FlaskConical, Layers, Mail, RefreshCw, Timer, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useApp } from "../api/context";
 import type { Metrics } from "../api/types";
-import { Button, Card, CardHeader, ConfirmDialog, Disclosure, ErrorNotice, Notice, SkeletonRows } from "../components/ui";
+import { Button, Card, CardHeader, ConfirmDialog, Disclosure, ErrorNotice, Notice, SkeletonRows, StatTile } from "../components/ui";
 import { formatDuration } from "../lib/format";
 import { useAsync } from "../lib/useAsync";
 
 const CALC_KEY = "phishtrace.calc";
-
-function Tile({ label, value, icon: Icon, tone }: { label: string; value: number | string | null; icon: LucideIcon; tone: string }) {
-  const measured = value !== null;
-  return (
-    <div className={`rounded-2xl p-4 ${measured ? tone : "border border-dashed border-slate-300 bg-slate-50 text-slate-500"}`}>
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{label}</p>
-        <Icon className="h-5 w-5 opacity-70" aria-hidden />
-      </div>
-      <p className={`mt-2 font-semibold tracking-tight ${measured ? "text-3xl" : "text-xl"}`}>{measured ? value : "Not measured"}</p>
-    </div>
-  );
-}
 
 function NumberField({ id, label, tag, value, onChange, disabled, hint }: {
   id: string; label: string; tag: "Assumption" | "Observed"; value: string; onChange: (v: string) => void; disabled?: boolean; hint?: string;
@@ -118,20 +105,20 @@ export function ImpactPage() {
         <>
           <section aria-labelledby="glance-title" className="space-y-3">
             <h2 id="glance-title" className="text-sm font-semibold text-slate-900">At a glance</h2>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <Tile label="Reports investigated" value={data.reportsInvestigated} icon={Mail} tone="bg-accent-50 text-accent-700" />
-              <Tile label="Cases reviewed" value={data.casesReviewed} icon={BadgeCheck} tone="bg-teal-50 text-teal-800" />
-              <Tile label="Reports grouped" value={data.reportsGrouped} icon={Layers} tone="bg-indigo-50 text-indigo-800" />
-              <Tile label="Evidence reused" value={data.evidenceReused} icon={RefreshCw} tone="bg-amber-50 text-amber-900" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <StatTile label="Reports investigated" value={data.reportsInvestigated} icon={Mail} tone="blue" />
+              <StatTile label="Cases reviewed" value={data.casesReviewed} icon={BadgeCheck} tone="teal" />
+              <StatTile label="Reports grouped" value={data.reportsGrouped} icon={Layers} tone="indigo" />
+              <StatTile label="Evidence reused" value={data.evidenceReused} icon={RefreshCw} tone="amber" />
             </div>
           </section>
 
           <section aria-labelledby="time-title" className="space-y-3">
             <h2 id="time-title" className="text-sm font-semibold text-slate-900">Time <span className="font-normal text-slate-500">(system and analyst are kept separate)</span></h2>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-              <Tile label="System runtime" value={data.runtimeMs == null ? null : formatDuration(data.runtimeMs)} icon={Clock} tone="bg-white border border-slate-200/70 shadow-card" />
-              <Tile label="Tool calls" value={data.toolCalls} icon={Clock} tone="bg-white border border-slate-200/70 shadow-card" />
-              <Tile label="Analyst review time per case" value={data.analystReviewMinutes == null ? null : `${data.analystReviewMinutes} min`} icon={Clock} tone="bg-white border border-slate-200/70 shadow-card" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <StatTile label="System runtime" value={data.runtimeMs == null ? null : formatDuration(data.runtimeMs)} icon={Timer} tone="slate" />
+              <StatTile label="Tool calls" value={data.toolCalls} icon={Activity} tone="slate" />
+              <StatTile label="Analyst review time per case" value={data.analystReviewMinutes == null ? null : `${data.analystReviewMinutes} min`} icon={Clock} tone="slate" />
             </div>
           </section>
 

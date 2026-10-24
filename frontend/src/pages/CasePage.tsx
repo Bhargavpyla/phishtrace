@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { Activity, ArrowLeft, FileSearch, GitCompare, ListChecks, Mail } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "../api/context";
 import type { Case } from "../api/types";
@@ -8,7 +8,7 @@ import { RelatedComparisonPanel } from "../components/RelatedComparison";
 import { ReviewPanel } from "../components/ReviewPanel";
 import { ToolActivity } from "../components/ToolActivity";
 import { VerdictCard } from "../components/VerdictCard";
-import { Button, Card, CardHeader, CopyButton, ErrorNotice, Skeleton, Tabs } from "../components/ui";
+import { Avatar, Button, Card, CardHeader, CopyButton, ErrorNotice, Skeleton, Tabs } from "../components/ui";
 import { formatTime, orDash } from "../lib/format";
 import { useAsync } from "../lib/useAsync";
 
@@ -55,11 +55,11 @@ function CaseView({ c, onOpenCase }: { c: Case; onOpenCase: (id: string) => void
   const first = related.data?.[0];
   const showCompare = !!first || !!c.relatedGroupId;
   const tabs = [
-    { id: "flagged", label: "Why flagged", badge: current.findings.length },
-    { id: "evidence", label: "Evidence", badge: current.evidence.length },
-    ...(showCompare ? [{ id: "compare", label: "Compare", badge: first ? related.data!.length : undefined, attention: !!first }] : []),
-    { id: "email", label: "Email" },
-    { id: "activity", label: "Activity" },
+    { id: "flagged", label: "Why flagged", badge: current.findings.length, icon: ListChecks },
+    { id: "evidence", label: "Evidence", badge: current.evidence.length, icon: FileSearch },
+    ...(showCompare ? [{ id: "compare", label: "Compare", badge: first ? related.data!.length : undefined, attention: !!first, icon: GitCompare }] : []),
+    { id: "email", label: "Email", icon: Mail },
+    { id: "activity", label: "Activity", icon: Activity },
   ];
 
   const toggleEvidence = (id: string) => {
@@ -120,11 +120,14 @@ export function CasePage({ caseId, onOpenCase, onBack }: { caseId: string; onOpe
   return (
     <div className="space-y-5">
       <Button variant="ghost" onClick={onBack} className="-ml-2"><ArrowLeft className="h-4 w-4" aria-hidden /> All investigations</Button>
-      <header>
-        <h1 className="wrap-any text-2xl font-semibold tracking-tight text-slate-900">{data ? orDash(data.subject, "(no subject)") : `Case ${caseId}`}</h1>
-        <p className="wrap-any mt-1 text-sm text-slate-600">
-          {data ? <>From <span className="font-medium text-slate-800">{orDash(data.sender)}</span> · Case {data.id}</> : "Loading…"}
-        </p>
+      <header className="flex items-start gap-4">
+        {data && <Avatar sender={data.sender} size="lg" />}
+        <div className="min-w-0">
+          <h1 className="wrap-any text-2xl font-semibold tracking-tight text-slate-900">{data ? orDash(data.subject, "(no subject)") : `Case ${caseId}`}</h1>
+          <p className="wrap-any mt-1 text-sm text-slate-600">
+            {data ? <>From <span className="font-medium text-slate-800">{orDash(data.sender)}</span> · <span className="rounded-full bg-slate-200/70 px-2 py-0.5 text-xs font-medium text-slate-700">Case {data.id}</span></> : "Loading…"}
+          </p>
+        </div>
       </header>
       {loading && <CaseSkeleton />}
       {error && <ErrorNotice title="Could not load this case" message={error} onRetry={reload} />}
