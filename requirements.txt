@@ -1,10 +1,9 @@
 google-genai
 pydantic
 tldextract
-<<<<<<< HEAD
-=======
 scikit-learn
->>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
+fastapi
+uvicorn
 streamlit
 pytest
 python-dotenv

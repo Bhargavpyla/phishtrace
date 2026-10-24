@@ -4,16 +4,10 @@ Note: an evidence ID existing does not prove the claim follows from it.
 Check semantic support by hand on the evaluation set.
 """
 import json
-<<<<<<< HEAD
-from pathlib import Path
-
-from schemas import LABEL_TO_ACTION, Assessment
-=======
 import re
 from pathlib import Path
 
 from schemas import LABEL_TO_ACTION, Assessment, Evidence
->>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
 
 CONFIG = json.loads((Path(__file__).parent / "config.json").read_text())
 
@@ -22,8 +16,6 @@ def queue_for(action: str) -> str:
     return CONFIG["queues"][action]
 
 
-<<<<<<< HEAD
-=======
 # Evidence kinds that justify escalation, and that forbid a "no strong indicators" closure.
 STRONG_KINDS = {"link_text_mismatch", "reply_to_mismatch", "lookalike_domain", "instruction_like_text",
                 "risky_attachment"}
@@ -31,7 +23,6 @@ STRONG_KINDS = {"link_text_mismatch", "reply_to_mismatch", "lookalike_domain", "
 _SAFE_CLAIM = re.compile(r"(?<!un)(?<!not )\bsafe(ly)?\b|\bharmless\b|\bguaranteed\b|\bno risk\b", re.I)
 
 
->>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
 def validate_assessment(a: Assessment, evidence_ids: set[str]) -> list[str]:
     problems = []
     if LABEL_TO_ACTION[a.label] != a.proposed_action:
@@ -47,8 +38,6 @@ def validate_assessment(a: Assessment, evidence_ids: set[str]) -> list[str]:
             if e not in evidence_ids:
                 problems.append(f"Unknown evidence ID {e}")
     return problems
-<<<<<<< HEAD
-=======
 
 
 def check_agent_output(a: Assessment, evidence: list[Evidence], revealed: set[str]) -> list[str]:
@@ -73,4 +62,3 @@ def check_agent_output(a: Assessment, evidence: list[Evidence], revealed: set[st
     if a.label == "no_strong_indicators" and STRONG_KINDS & set(kind_of.values()):
         problems.append("The parser found strong indicators in this email; no_strong_indicators is not allowed")
     return problems
->>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
