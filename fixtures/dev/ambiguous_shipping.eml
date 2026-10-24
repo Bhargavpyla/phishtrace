@@ -1,0 +1,10 @@
+From: "Parcel Alerts" <notifications@parcel-track.example>
+To: employee@acmecorp.example
+Subject: Your parcel is on its way
+Date: Fri, 23 Oct 2026 12:30:00 +0530
+Message-ID: <ship1@parcel-track.example>
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+
+<html><body><p>Your parcel is out for delivery.</p>
+<p><a href="https://tracking-portal.example/12345">Track your parcel</a></p></body></html>

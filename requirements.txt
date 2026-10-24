@@ -1,0 +1,6 @@
+google-genai
+pydantic
+tldextract
+streamlit
+pytest
+python-dotenv

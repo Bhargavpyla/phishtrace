@@ -1,0 +1,9 @@
+{
+  "own_domains": ["acmecorp.example"],
+  "queues": {
+    "create_incident": "security-incidents",
+    "route_manual_investigation": "manual-investigation",
+    "reviewed_closure": "closed-reviewed"
+  },
+  "max_upload_bytes": 1000000
+}
