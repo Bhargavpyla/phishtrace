@@ -1,0 +1,2 @@
+# Reply-To mismatch
+If the Reply-To address belongs to a different registrable domain than the From address, replies will go to a party other than the apparent sender. This is a strong indicator for credential or payment requests. Mailing platforms and ticketing systems sometimes set a different Reply-To legitimately, so note the possible benign explanation and check whether the Reply-To domain is a service the sender plausibly uses.

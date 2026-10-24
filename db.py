@@ -14,7 +14,11 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
+<<<<<<< HEAD
 from schemas import Assessment
+=======
+from schemas import Assessment, Evidence
+>>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
 from validate import validate_assessment
 
 SCHEMA = """
@@ -48,8 +52,16 @@ BEGIN SELECT RAISE(ABORT, 'Evidence is immutable'); END;
 CREATE TRIGGER IF NOT EXISTS evidence_no_replace BEFORE INSERT ON evidence
 WHEN EXISTS(SELECT 1 FROM evidence WHERE intake_id=NEW.intake_id AND eid=NEW.eid)
 BEGIN SELECT RAISE(ABORT, 'Evidence is immutable'); END;
+<<<<<<< HEAD
 CREATE TRIGGER IF NOT EXISTS evidence_no_insert_after_assessment BEFORE INSERT ON evidence
 WHEN EXISTS(SELECT 1 FROM assessments WHERE intake_id=NEW.intake_id)
+=======
+-- Email-derived evidence freezes at the first assessment. Trusted playbook passages are exempt so a
+-- re-investigation can still record (and cite) a passage it retrieves; existing ids stay immutable.
+DROP TRIGGER IF EXISTS evidence_no_insert_after_assessment;
+CREATE TRIGGER evidence_no_insert_after_assessment BEFORE INSERT ON evidence
+WHEN NEW.kind <> 'playbook_passage' AND EXISTS(SELECT 1 FROM assessments WHERE intake_id=NEW.intake_id)
+>>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
 BEGIN SELECT RAISE(ABORT, 'Evidence is frozen after assessment'); END;
 """
 
@@ -212,6 +224,29 @@ def decide(conn, reviewer, assessment_id, decision, reason=None):
         raise
 
 
+<<<<<<< HEAD
+=======
+def get_evidence(conn, intake_id) -> list[Evidence]:
+    return [Evidence(id=r["eid"], kind=r["kind"], location=r["location"], value=r["value"], note=r["note"] or "")
+            for r in conn.execute("SELECT * FROM evidence WHERE intake_id=? ORDER BY rowid", (intake_id,))]
+
+
+def get_assessment(conn, assessment_id):
+    r = conn.execute("SELECT * FROM assessments WHERE id=?", (assessment_id,)).fetchone()
+    return dict(r) if r else None
+
+
+def latest_assessment(conn, intake_id):
+    r = conn.execute("SELECT * FROM assessments WHERE intake_id=? ORDER BY version DESC LIMIT 1",
+                     (intake_id,)).fetchone()
+    return dict(r) if r else None
+
+
+def list_intakes(conn):
+    return [dict(r) for r in conn.execute("SELECT * FROM intakes ORDER BY id DESC")]
+
+
+>>>>>>> 8d97bf8 (feat: Add schemas, tools, and validation for phishing assessment)
 def list_cases(conn):
     return [dict(r) for r in conn.execute("SELECT * FROM cases ORDER BY id")]
 

@@ -1,0 +1,2 @@
+# Legitimate third-party services
+Organisations genuinely use outside vendors for HR portals, surveys, e-signature and training, so links to unfamiliar domains are not automatically malicious. If the link text is plain words, the destination is a plausible vendor domain, and nothing else is flagged, that is a benign explanation. Even then, record that sender identity was not independently verified. A third-party domain the reviewer cannot place is an unknown that warrants manual investigation rather than closure.

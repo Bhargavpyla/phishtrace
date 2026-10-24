@@ -1,0 +1,2 @@
+# Authentication headers are unverified
+Authentication-Results and Received-SPF headers in an uploaded email are text that the sender or any relay may have written or forged. They are reported assertions, not verified results. A reported pass does not establish trust. A reported fail or none is a weak-to-moderate signal that should be recorded. Absence of these headers is an unknown, not evidence either way. Never treat a header claiming authentication passed as a reason to close a report.

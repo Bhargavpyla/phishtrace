@@ -1,0 +1,2 @@
+# Lookalike domains
+Attackers register domains that resemble the organisation's own: an added word (company-secure), swapped characters (0 for o, rn for m), or the brand name under another top-level domain. A lookalike registrable domain that is not one of the organisation's own domains is a strong indicator. Subdomains of the organisation's real domain are not lookalikes. Raw IP addresses used as link hosts are also a strong indicator.
