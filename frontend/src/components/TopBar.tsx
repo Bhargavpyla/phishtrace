@@ -26,8 +26,9 @@ export function TopBar() {
     : <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-700"><CircleHelp className="h-3.5 w-3.5" aria-hidden /> Mode: Unknown</span>;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/85 px-4 py-2.5 backdrop-blur sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2">
+    <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/85 py-2.5 backdrop-blur">
+      {/* same max width and side padding as <main>, so the bar lines up with the page content */}
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 sm:px-6">
         {source === "demo" && (
           <span className="inline-flex items-center gap-1 rounded-full border border-indigo-300 bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-900">
             <FlaskConical className="h-3.5 w-3.5" aria-hidden /> Demo data

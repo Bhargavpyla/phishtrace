@@ -7,7 +7,7 @@ Reply-To: reset@mailbox-verify.example
 Authentication-Results:
  mx.acmecorp.example; spf=fail smtp.mailfrom=acme-corp-login.example
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
+Content-Ty: multipart/alternative;
  boundary="===============3604524159958366124=="
 
 --===============3604524159958366124==

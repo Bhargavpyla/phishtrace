@@ -55,15 +55,16 @@ export function RelatedPage({ onOpenCase }: { onOpenCase: (id: string) => void }
           </div>
           <ol className="mt-4 divide-y divide-slate-100 border-t border-slate-100">
             {g.members.map((m, i) => (
-              <li key={m.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
-                <span className="w-6 text-xs text-slate-500">{i + 1}.</span>
-                <div className="min-w-0 flex-1">
+              /* fixed columns so badges and buttons line up from row to row */
+              <li key={m.id} className="grid items-center gap-x-4 gap-y-2 px-5 py-3 sm:grid-cols-[1.5rem_minmax(0,1fr)_8.5rem_7.5rem_10rem]">
+                <span className="hidden text-xs text-slate-500 sm:block">{i + 1}.</span>
+                <div className="min-w-0">
                   <p className="wrap-any text-sm font-medium text-slate-900">{orDash(m.subject, "(no subject)")}</p>
                   <p className="wrap-any text-xs text-slate-500">{m.id} · {orDash(m.sender)} · {formatTime(m.receivedAt)}</p>
                 </div>
-                <AssessmentBadge value={m.proposed} />
-                <ReviewBadge value={m.reviewStatus} />
-                <Button onClick={() => onOpenCase(m.id)} aria-label={`Open case ${m.id}: ${m.subject}`}>
+                <div className="flex sm:justify-start"><AssessmentBadge value={m.proposed} /></div>
+                <div className="flex sm:justify-start"><ReviewBadge value={m.reviewStatus} /></div>
+                <Button className="w-full" onClick={() => onOpenCase(m.id)} aria-label={`Open case ${m.id}: ${m.subject}`}>
                   {i === 0 ? "Open case" : "Open & compare"}
                 </Button>
               </li>
