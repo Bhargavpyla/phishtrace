@@ -15,7 +15,8 @@ export function CaseTable({ cases, onOpen }: { cases: CaseSummary[]; onOpen: (id
     <div className="overflow-x-auto">
       <table className="w-full min-w-[44rem] text-left text-sm">
         <caption className="sr-only">Recent investigations</caption>
-        <thead className="sticky top-16 z-10 bg-white/95 backdrop-blur border-b border-slate-200 text-xs font-medium uppercase tracking-wide text-slate-500 shadow-sm">
+        {/* not sticky: inside an overflow-x container a sticky header lands on top of the first row */}
+        <thead className="border-b border-slate-200 bg-white text-xs font-medium uppercase tracking-wide text-slate-500">
           <tr>
             <th scope="col" className="w-1/2 min-w-[360px] py-3 pl-5 pr-3">Email</th>
             <th scope="col" className="whitespace-nowrap py-3 pr-3">Assessment</th>

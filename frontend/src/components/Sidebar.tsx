@@ -1,5 +1,6 @@
-import { BarChart3, Layers, Plus, SearchCheck, ShieldCheck, type LucideIcon } from "lucide-react";
+import { BarChart3, Layers, Plus, SearchCheck, type LucideIcon } from "lucide-react";
 import { useApp } from "../api/context";
+import { Mascot } from "./Mascot";
 import { useAsync } from "../lib/useAsync";
 
 export type View = "investigations" | "related" | "impact";
@@ -33,9 +34,7 @@ export function Sidebar({ view, onNavigate, onNewInvestigation }: {
       <div aria-hidden className="pointer-events-none absolute -right-24 top-40 hidden h-64 w-64 rounded-full bg-accent-600/15 blur-3xl lg:block" />
 
       <div className="relative flex items-center gap-3 px-5 py-4 lg:px-6 lg:pb-6 lg:pt-7">
-        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-accent-600 text-white shadow-lg shadow-teal-600/30 ring-1 ring-white/20">
-          <ShieldCheck className="h-6 w-6" aria-hidden />
-        </span>
+        <Mascot className="h-11 w-11 shadow-lg shadow-teal-600/30" />
         <div>
           <p className="text-lg font-semibold leading-tight tracking-tight text-white">PhishTrace</p>
           <p className="text-xs text-slate-400">Evidence-led email triage</p>

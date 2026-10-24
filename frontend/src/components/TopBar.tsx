@@ -30,7 +30,7 @@ export function TopBar({ crumbs }: { crumbs: string[] }) {
   return (
     <header className="sticky top-0 z-20 border-b border-white/60 bg-white/70 py-2.5 shadow-[0_1px_0_rgba(15,29,54,0.04)] backdrop-blur-md">
       {/* same max width and side padding as <main>, so the bar lines up with the page content */}
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 sm:px-6 lg:px-8">
         <nav aria-label="Breadcrumb" className="min-w-0">
           <ol className="flex items-center gap-1 text-sm">
             <li className="text-slate-400">PhishTrace</li>
