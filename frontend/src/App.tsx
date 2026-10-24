@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { AppProvider, useApp } from "./api/context";
-import { Sidebar, type View } from "./components/Sidebar";
-import { TopBar } from "./components/TopBar";
+import { Navbar, type View } from "./components/Navbar";
 import { CasePage } from "./pages/CasePage";
 import { ImpactPage } from "./pages/ImpactPage";
 import { QueuePage } from "./pages/QueuePage";
@@ -20,22 +19,27 @@ function Shell() {
     setView("investigations");
   }
 
-  const navigate = (v: View) => { setView(v); setCaseId(null); };
-  const openCase = (id: string) => { setCaseId(id); setView("investigations"); window.scrollTo?.({ top: 0 }); };
+  const navigate = (v: View) => {
+    setView(v);
+    setCaseId(null);
+  };
+
+  const openCase = (id: string) => {
+    setCaseId(id);
+    setView("investigations");
+    window.scrollTo?.({ top: 0 });
+  };
 
   return (
-    <div className="min-h-screen lg:flex">
-      <Sidebar view={view} onNavigate={navigate} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
-          {view === "investigations" && (caseId
-            ? <CasePage caseId={caseId} onOpenCase={openCase} onBack={() => setCaseId(null)} />
-            : <QueuePage onOpenCase={openCase} />)}
-          {view === "related" && <RelatedPage onOpenCase={openCase} />}
-          {view === "impact" && <ImpactPage />}
-        </main>
-      </div>
+    <div className="min-h-screen flex flex-col bg-slate-50/50">
+      <Navbar view={view} onNavigate={navigate} />
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        {view === "investigations" && (caseId
+          ? <CasePage caseId={caseId} onOpenCase={openCase} onBack={() => setCaseId(null)} />
+          : <QueuePage onOpenCase={openCase} />)}
+        {view === "related" && <RelatedPage onOpenCase={openCase} />}
+        {view === "impact" && <ImpactPage />}
+      </main>
     </div>
   );
 }

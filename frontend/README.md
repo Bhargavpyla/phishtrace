@@ -33,7 +33,7 @@ Three destinations: **Investigations** (upload, summary, recent investigations, 
 | Upload → investigate → case opens automatically (live) | Working against `api.py`; processing shows genuine elapsed time (no invented progress) |
 | Findings, evidence, review, report download | Working in demo and live |
 | Related-report comparison, grouping, evidence reuse | UI complete; **backend has no grouping or reuse logic**, so only demo fixtures show it. Live shows an empty state that says so |
-| Changing an assessment in review | Demo only; the backend returns 501 |
+| Changing an assessment in review | Working in demo and live; a note is required and the original proposal is retained |
 | Demo uploads | Validated, then reported as not analysed (no fake analysis) |
 | Analyst review time, reports grouped, evidence reused (live) | "Not measured" |
 

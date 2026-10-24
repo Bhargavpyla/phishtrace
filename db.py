@@ -14,8 +14,8 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
-from schemas import Assessment, Evidence
-from validate import validate_assessment
+from schemas import LABEL_TO_ACTION, Assessment, Evidence
+from validate import queue_for, validate_assessment
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users(
@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS assessments(
   UNIQUE(intake_id, version));
 CREATE TABLE IF NOT EXISTS approvals(
   id INTEGER PRIMARY KEY, assessment_id INTEGER, version INTEGER, reviewer TEXT,
-  decision TEXT, reason TEXT, created_at TEXT);
+  decision TEXT, reason TEXT, created_at TEXT,
+  reviewed_label TEXT, reviewed_action TEXT, reviewed_queue TEXT);
 CREATE TABLE IF NOT EXISTS cases(
   id INTEGER PRIMARY KEY, execution_key TEXT UNIQUE NOT NULL, intake_id INTEGER, assessment_id INTEGER,
   case_type TEXT, queue TEXT, summary TEXT, created_by TEXT, created_at TEXT);
@@ -77,6 +78,11 @@ def connect(path="phishtrace.db"):
 
 def init_db(conn):
     conn.executescript(SCHEMA)
+    # CREATE TABLE IF NOT EXISTS does not add columns to an existing SQLite DB.
+    approval_columns = {r["name"] for r in conn.execute("PRAGMA table_info(approvals)")}
+    for name in ("reviewed_label", "reviewed_action", "reviewed_queue"):
+        if name not in approval_columns:
+            conn.execute(f"ALTER TABLE approvals ADD COLUMN {name} TEXT")
 
 
 @contextmanager
@@ -174,12 +180,14 @@ def save_assessment(conn, intake_id, a: Assessment, model_id, playbook_version, 
 
 
 # ---- approval + execution (the only write path to 'cases') ----
-def decide(conn, reviewer, assessment_id, decision, reason=None):
+def decide(conn, reviewer, assessment_id, decision, reason=None, reviewed_label=None):
     """Trusted backend entry point: reviewer must come from an authenticated
     server-side session, never a form field or a model-generated argument.
     """
     if decision not in ("approve", "reject"):
         raise ValueError("decision must be 'approve' or 'reject'")
+    if reviewed_label is not None and reviewed_label not in LABEL_TO_ACTION:
+        raise ValueError("reviewed_label is not permitted")
     u = conn.execute("SELECT role FROM users WHERE username=?", (reviewer,)).fetchone()
     if not u or u["role"] != "reviewer":
         audit(conn, reviewer, "approval_denied", assessment_id=assessment_id)
@@ -195,20 +203,29 @@ def decide(conn, reviewer, assessment_id, decision, reason=None):
                 return {"status": "already_executed", "case_id": done["id"]}
             if a["status"] != "pending":
                 raise StaleProposalError(f"Proposal is {a['status']}; review the current proposal.")
-            conn.execute("INSERT INTO approvals(assessment_id,version,reviewer,decision,reason,created_at) "
-                         "VALUES(?,?,?,?,?,?)", (assessment_id, a["version"], reviewer, decision, reason, _now()))
+            effective_label = reviewed_label or a["label"]
+            effective_action = LABEL_TO_ACTION[effective_label]
+            effective_queue = queue_for(effective_action)
+            conn.execute(
+                "INSERT INTO approvals(assessment_id,version,reviewer,decision,reason,created_at,"
+                "reviewed_label,reviewed_action,reviewed_queue) VALUES(?,?,?,?,?,?,?,?,?)",
+                (assessment_id, a["version"], reviewer, decision, reason, _now(),
+                 effective_label, effective_action, effective_queue))
             if decision == "reject":
                 conn.execute("UPDATE assessments SET status='rejected' WHERE id=?", (assessment_id,))
-                audit(conn, reviewer, "rejected", a["intake_id"], assessment_id, reason=reason)
+                audit(conn, reviewer, "rejected", a["intake_id"], assessment_id, reason=reason,
+                      original_label=a["label"], reviewed_label=effective_label)
                 return {"status": "rejected"}
             subject = conn.execute("SELECT subject FROM intakes WHERE id=?", (a["intake_id"],)).fetchone()[0]
             cur = conn.execute(
                 "INSERT INTO cases(execution_key,intake_id,assessment_id,case_type,queue,summary,created_by,created_at)"
                 " VALUES(?,?,?,?,?,?,?,?)",
-                (key, a["intake_id"], assessment_id, CASE_TYPE[a["proposed_action"]], a["queue"],
-                 f"{a['label']}: {subject}", reviewer, _now()))
+                (key, a["intake_id"], assessment_id, CASE_TYPE[effective_action], effective_queue,
+                 f"{effective_label}: {subject}", reviewer, _now()))
             conn.execute("UPDATE assessments SET status='approved' WHERE id=?", (assessment_id,))
-            audit(conn, reviewer, "approved_and_executed", a["intake_id"], assessment_id, case_id=cur.lastrowid)
+            audit(conn, reviewer, "approved_and_executed", a["intake_id"], assessment_id,
+                  case_id=cur.lastrowid, original_label=a["label"], reviewed_label=effective_label,
+                  reviewed_action=effective_action, overridden=effective_label != a["label"])
             return {"status": "executed", "case_id": cur.lastrowid}
     except StaleProposalError:
         audit(conn, reviewer, "stale_approval_rejected", assessment_id=assessment_id)

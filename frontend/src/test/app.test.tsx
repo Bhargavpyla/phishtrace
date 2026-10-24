@@ -285,8 +285,8 @@ describe("human review", () => {
   it("requires a note to change the assessment", async () => {
     const { user } = setup();
     await openCase(user, "C-102");
-    await user.selectOptions(screen.getByLabelText("Change assessment"), "needs_review");
-    const confirm = screen.getByRole("button", { name: "Confirm review" });
+    await user.selectOptions(screen.getByLabelText("Final assessment"), "needs_review");
+    const confirm = screen.getByRole("button", { name: "Save corrected assessment" });
     expect(confirm).toBeDisabled();
     expect(screen.getByRole("button", { name: "Accept proposed assessment" })).toBeDisabled();
     await user.type(screen.getByLabelText(/Reviewer note/), "Auth header differs.");

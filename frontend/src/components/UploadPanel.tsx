@@ -98,22 +98,26 @@ export function UploadPanel({ onOpenCase }: { onOpenCase: (id: string) => void }
     : <>Start investigation{runnable.length > 1 ? ` (${runnable.length} files)` : ""}</>;
 
   return (
-    <section aria-labelledby="upload-title" className="overflow-hidden rounded-3xl bg-gradient-to-br from-navy-900 via-navy-800 to-accent-700 shadow-lift">
-      <div className="px-6 pb-4 pt-6 text-white sm:px-8 sm:pt-8">
-        <h2 id="upload-title" className="text-2xl font-semibold tracking-tight">Investigate an email</h2>
-        <p className="mt-1 max-w-xl text-sm text-slate-200">Upload a suspicious email. PhishTrace gathers the evidence so you can decide what to do.</p>
-        <div className="mt-4"><Stepper current={step} /></div>
+    <section aria-labelledby="upload-title" className="overflow-hidden rounded-2xl bg-gradient-to-br from-navy-900 via-navy-800 to-accent-700 shadow-lift">
+      <div className="px-5 pb-4 pt-5 text-white sm:px-6">
+        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end">
+          <div>
+            <h2 id="upload-title" className="text-xl font-semibold tracking-tight">Investigate an email</h2>
+            <p className="mt-1 max-w-xl text-sm text-slate-200">Upload an .eml file. PhishTrace gathers evidence and proposes the next action for a reviewer.</p>
+          </div>
+          <Stepper current={step} />
+        </div>
       </div>
 
-      <div className="space-y-4 rounded-t-3xl bg-white p-5 sm:p-6">
+      <div className="space-y-3 rounded-t-2xl bg-white p-4 sm:p-5">
         <div
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
           data-testid="dropzone"
-          className={`flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors sm:flex-row sm:text-left ${dragging ? "border-teal-600 bg-teal-50" : "border-slate-300 bg-slate-50/70"}`}
+          className={`flex flex-col items-center gap-3 rounded-xl border-2 border-dashed px-5 py-5 text-center transition-colors sm:flex-row sm:text-left ${dragging ? "border-teal-600 bg-teal-50" : "border-slate-300 bg-slate-50/70"}`}
         >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-700"><Upload className="h-7 w-7" aria-hidden /></span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700"><Upload className="h-6 w-6" aria-hidden /></span>
           <div className="flex-1">
             <p className="text-base font-semibold text-slate-900">Drag and drop an .eml file here</p>
             <p className="text-sm text-slate-500">

@@ -29,7 +29,7 @@ reviewer. Bind to localhost; do not expose this to a network.
 | `POST /api/cases` | Multipart `file` (+ ignored `policyId`) | Parses, stores, investigates **synchronously** (up to the agent's 60 s budget). `{"caseId":"C-1","duplicate":false}`; 422 bad file, 413 over the size limit, 500 if the investigation crashes (intake is kept) |
 | `GET /api/cases/{id}` | Full case | `Case`; ids look like `C-<intake id>` |
 | `GET /api/cases/{id}/related` | Related earlier cases | **NOT SUPPORTED**: `[]` with header `X-PhishTrace-Not-Supported: related-cases` |
-| `POST /api/cases/{id}/review` | `{assessment, note, policyVersion}` | Accepting the proposal calls `db.decide(..., "approve", note)`; idempotent. **Changing the assessment returns 501** |
+| `POST /api/cases/{id}/review` | `{assessment, note, policyVersion}` | Records the review through `db.decide`; changing the proposal requires a note, preserves the original, and executes the policy action for the reviewed assessment. Idempotent. |
 | `GET /api/metrics` | Counts and measured times | Unmeasured values are `null` |
 | `GET /api/cases/{id}/report` | JSON report download | `Content-Disposition: attachment`; includes a `notSupported` list |
 
@@ -52,7 +52,7 @@ reviewer. Bind to localhost; do not expose this to a network.
 
 ## NOT SUPPORTED yet
 - **Related-report grouping, evidence reuse, `RelatedCaseComparison`, `relatedGroupId`.** No such logic exists in Python. Needs a new backend feature.
-- **Reviewer-changed assessments.** `db.decide` can only approve or reject the proposal; the API returns 501 for a different assessment. A reject path exists in `db.decide` but the UI has no button for it.
+- The reject path in `db.decide` is available to backend callers but the UI records a final reviewed assessment instead of exposing a separate reject button.
 - **Analyst review time** (`null`), **reports grouped** (`null`), **evidence reused** (`null`).
 - **Live "running" state / progress.** Investigation is synchronous; the upload request simply stays open.
 - **Authentication and per-user roles.** See Identity above.

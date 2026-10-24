@@ -5,6 +5,23 @@ export function formatTime(iso: string | null | undefined): string {
   return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
 }
 
+export function formatRelativeTime(iso: string | null | undefined): string {
+  if (!iso) return "Not recorded";
+  const d = new Date(iso);
+  const time = d.getTime();
+  if (Number.isNaN(time)) return "Not recorded";
+  const now = Date.now();
+  const diffSec = Math.floor((now - time) / 1000);
+  if (diffSec < 0 || diffSec < 60) return "Just now";
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  const diffDays = Math.floor(diffHr / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 export function formatDuration(ms: number | null | undefined): string {
   if (ms == null) return "Not measured";
   if (ms < 1000) return `${Math.round(ms)} ms`;

@@ -117,10 +117,22 @@ def test_non_reviewer_identity_is_refused(tmp_path, monkeypatch):
     assert c.get("/api/cases/C-1").json()["reviewStatus"] == "unreviewed"
 
 
-def test_changing_the_assessment_is_not_supported_yet(client):
+def test_reviewer_can_change_assessment(client):
     upload(client)
-    r = client.post("/api/cases/C-1/review", json={"assessment": "likely_benign", "note": "x"})
-    assert r.status_code == 501 and "not supported yet" in r.json()["error"]
+    r = client.post("/api/cases/C-1/review", json={
+        "assessment": "likely_benign", "note": "Verified the sender through a separate channel."})
+    assert r.status_code == 200
+    case = r.json()
+    assert case["proposed"] == "suspicious"
+    assert case["reviewedAssessment"] == "likely_benign"
+    assert case["reviews"][0]["originalAssessment"] == "suspicious"
+    assert case["reviews"][0]["reviewedAssessment"] == "likely_benign"
+
+
+def test_changing_assessment_requires_note(client):
+    upload(client)
+    r = client.post("/api/cases/C-1/review", json={"assessment": "likely_benign", "note": ""})
+    assert r.status_code == 422 and "note is required" in r.json()["error"]
     assert client.get("/api/cases/C-1").json()["reviews"] == []
     assert client.post("/api/cases/C-1/review", json={"assessment": "nonsense"}).status_code == 422
 
@@ -153,6 +165,7 @@ def test_report_download(client):
     assert r.status_code == 200 and "attachment" in r.headers["content-disposition"]
     doc = r.json()
     assert doc["source"] == "backend" and doc["case"]["id"] == "C-1" and "evidence reuse" in doc["notSupported"]
+    assert "assessment changes by reviewers" not in doc["notSupported"]
     assert "tamper-proof" in doc["notice"]
 
 

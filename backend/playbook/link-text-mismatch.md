@@ -1,0 +1,2 @@
+# Link text versus destination mismatch
+When the visible text of a link names one domain but the underlying URL points to a different registrable domain, the link is misleading. This is a strong indicator because a legitimate sender has no reason to display one destination and send the reader to another. Compare registrable domains, not substrings. A link whose text is plain words such as 'Reset password' is not a mismatch by itself. Record both the displayed text and the real destination as evidence.

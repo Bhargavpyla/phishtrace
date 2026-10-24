@@ -1,0 +1,2 @@
+# Urgency and pressure language
+Phrases such as act immediately, account will be suspended, final notice, or verify within 24 hours are pressure tactics that appear in phishing, but also in legitimate security notices and billing reminders. Urgency alone is a weak indicator and cannot justify a likely-phishing conclusion. Combine it with a technical indicator such as a link mismatch before escalating.

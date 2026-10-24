@@ -5,8 +5,8 @@ Local demo only. There is NO authentication: the server decides who acts (PHISHT
 PHISHTRACE_REVIEW_USER), db.decide() still checks that user's stored role, and the request body can never name
 the reviewer. Bind to localhost; do not expose this to a network.
 
-NOT SUPPORTED YET (returned as 501, empty, or null; see docs): related-report grouping and evidence reuse,
-reviews that change the assessment, analyst review time, live "running" investigation state.
+NOT SUPPORTED YET (returned as empty or null; see docs): related-report grouping and evidence reuse,
+analyst review time, live "running" investigation state.
 """
 import functools
 import inspect
@@ -42,7 +42,9 @@ LIMITATIONS = [
     "Links were never visited and attachments were never opened.",
     "Related-report grouping and evidence reuse are not implemented in this backend yet.",
 ]
-UI_LABEL = {"likely_phishing": "suspicious", "no_strong_indicators": "likely_benign"}
+UI_LABEL = {"likely_phishing": "suspicious", "no_strong_indicators": "likely_benign",
+            "needs_investigation": "needs_review"}
+INTERNAL_LABEL = {value: key for key, value in UI_LABEL.items()}
 TOOL_EVENTS = ("tool_call", "tool_refused")
 
 
@@ -82,11 +84,11 @@ def _reviews(conn, iid: int) -> list[dict]:
     for r in rows:
         approved = r["decision"] == "approve"
         original = ui_label(r["label"])
+        reviewed = ui_label(r["reviewed_label"] or r["label"])
         out.append({
             "id": f"R{r['id']}", "at": r["created_at"], "reviewer": r["reviewer"],
             "originalAssessment": original,
-            # decide() cannot record a replacement assessment: approve keeps the proposal, reject reopens it.
-            "reviewedAssessment": original if approved else "needs_review",
+            "reviewedAssessment": reviewed if approved else "needs_review",
             "note": (r["reason"] or "") if approved else f"Proposal rejected. {r['reason'] or ''}".strip(),
             "policyVersion": r["playbook_version"] or "unknown",
         })
@@ -308,11 +310,12 @@ def create_app(db_path: str | None = None, llm_factory: Callable[[], object] | N
             raise HTTPException(409, "This case has no assessment to review.")
         if body.assessment not in ("suspicious", "likely_benign", "needs_review"):
             raise HTTPException(422, "assessment must be suspicious, likely_benign or needs_review.")
-        if body.assessment != ui_label(a["label"]):
-            raise HTTPException(501, "Changing the assessment is not supported yet: the backend can only approve "
-                                     "or reject the proposal. Accept the proposal, or reject it via db.decide.")
+        changed = body.assessment != ui_label(a["label"])
+        if changed and not body.note.strip():
+            raise HTTPException(422, "A reviewer note is required when changing the assessment.")
         try:
-            db.decide(conn, review_user, a["id"], "approve", body.note.strip() or None)
+            db.decide(conn, review_user, a["id"], "approve", body.note.strip() or None,
+                      reviewed_label=INTERNAL_LABEL[body.assessment])
         except PermissionError as e:
             raise HTTPException(403, str(e))
         except db.StaleProposalError as e:
@@ -346,7 +349,7 @@ def create_app(db_path: str | None = None, llm_factory: Callable[[], object] | N
             "source": "backend",
             "notice": "Audit history, not a tamper-proof record. Evidence citations support but do not by "
                       "themselves prove a conclusion.",
-            "notSupported": ["related-report grouping", "evidence reuse", "assessment changes by reviewers"],
+            "notSupported": ["related-report grouping", "evidence reuse"],
             "case": {k: c[k] for k in ("id", "subject", "sender", "replyTo", "receivedAt", "mode", "policyVersion",
                                        "proposed", "reviewStatus", "reviewedAssessment", "explanation",
                                        "missingEvidence", "limitations")},

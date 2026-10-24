@@ -23,6 +23,7 @@ interface AppState {
   /** Bumped after uploads/reviews so lists refetch. */
   dataVersion: number;
   bump: () => void;
+  unreviewedCount: number;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -82,10 +83,31 @@ export function AppProvider({ children, demoDelayMs }: { children: ReactNode; de
 
   const policy = policies.find((p) => p.id === policyId) ?? policies[0] ?? null;
 
+  const [unreviewedCount, setUnreviewedCount] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    if (source === "demo" || health?.connected) {
+      api.listCases()
+        .then((cases) => {
+          if (active) {
+            setUnreviewedCount(cases.filter((c) => c.reviewStatus === "unreviewed").length);
+          }
+        })
+        .catch(() => {
+          if (active) setUnreviewedCount(0);
+        });
+    } else {
+      setUnreviewedCount(0);
+    }
+    return () => { active = false; };
+  }, [api, dataVersion, health?.connected, source]);
+
   return (
     <Ctx.Provider value={{
       api, demo, source, setSource, health, checkingHealth, recheck, policies, policy,
       setPolicyId, dataVersion, bump: () => setDataVersion((v) => v + 1),
+      unreviewedCount,
     }}>
       {children}
     </Ctx.Provider>

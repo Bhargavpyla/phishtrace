@@ -1,5 +1,5 @@
 import { CircleCheck, Download, FlaskConical, UserCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "../api/context";
 import type { Assessment, Case } from "../api/types";
 import { downloadBlob, formatTime } from "../lib/format";
@@ -18,6 +18,11 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
   const [reportError, setReportError] = useState<string | null>(null);
 
   const changed = selected !== c.proposed;
+  const finalized = c.reviewStatus === "reviewed";
+
+  useEffect(() => {
+    setSelected(c.reviewedAssessment ?? c.proposed);
+  }, [c.proposed, c.reviewedAssessment]);
 
   async function submit(assessment: Assessment) {
     if (busy) return;   // one submission at a time
@@ -27,7 +32,9 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
       onSaved(updated);
       bump();
       setNote("");
-      setSaved(`Review saved: ${ASSESSMENT_LABEL[assessment]}.`);   // shown only after the API confirmed
+      const finalAssessment = updated.reviewedAssessment ?? assessment;
+      setSelected(finalAssessment);
+      setSaved(`Review saved: ${ASSESSMENT_LABEL[finalAssessment]}.`);   // shown only after the API confirmed
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save the review.");   // the note is kept so nothing is lost
     } finally {
@@ -51,7 +58,7 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
   return (
     <Card aria-labelledby="review-title" className="overflow-hidden">
       <CardHeader id="review-title" title="What needs your review" icon={<UserCheck className="h-4 w-4" aria-hidden />}
-        subtitle="Accept or change the proposal. The original is always kept." />
+        subtitle={finalized ? "This decision has been recorded. The original proposal remains in the audit history." : "Confirm or correct the proposal. The original is always kept."} />
       <div className="space-y-4 px-5 pb-5">
         {source === "demo" && (
           <Notice tone="warn"><FlaskConical className="mr-1 inline h-3.5 w-3.5" aria-hidden />Demo only: saved in this browser, not sent anywhere.</Notice>
@@ -65,9 +72,9 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
           </dd>
         </dl>
 
-        <div className="space-y-3">
+        {!finalized && <div className="space-y-3">
           <div>
-            <label htmlFor="review-assessment" className="block text-xs font-medium text-slate-700">Change assessment</label>
+            <label htmlFor="review-assessment" className="block text-xs font-medium text-slate-700">Final assessment</label>
             <select id="review-assessment" value={selected} onChange={(e) => setSelected(e.target.value as Assessment)}
               className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
               {(Object.keys(ASSESSMENT_LABEL) as Assessment[]).map((a) => <option key={a} value={a}>{ASSESSMENT_LABEL[a]}{a === c.proposed ? " (proposed)" : ""}</option>)}
@@ -85,9 +92,9 @@ export function ReviewPanel({ c, onSaved }: { c: Case; onSaved: (updated: Case) 
               title={changed ? "Set the selector back to the proposed assessment to accept it" : undefined}>
               <CircleCheck className="h-4 w-4" aria-hidden /> Accept proposed assessment
             </Button>
-            <Button busy={busy} disabled={!changed || !note.trim()} onClick={() => submit(selected)}>Confirm review</Button>
+            <Button busy={busy} disabled={!changed || !note.trim()} onClick={() => submit(selected)}>Save corrected assessment</Button>
           </div>
-        </div>
+        </div>}
 
         {error && <ErrorNotice title="Review not saved. Your note is still here." message={error} />}
         {saved && <p role="status" className="flex items-center gap-1.5 rounded-xl bg-teal-50 px-3 py-2 text-sm font-medium text-teal-800"><CircleCheck className="h-4 w-4" aria-hidden /> {saved}</p>}

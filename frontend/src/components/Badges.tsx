@@ -27,14 +27,23 @@ export function AssessmentBadge({ value, size }: { value: Assessment; size?: "sm
 export function ReviewBadge({ value }: { value: ReviewStatus }) {
   return value === "reviewed"
     ? <Chip icon={BadgeCheck} text="Reviewed" tone="border-teal-200 bg-white text-teal-800" />
-    : <Chip icon={CircleDashed} text="Unreviewed" tone="border-slate-300 bg-slate-50 text-slate-700" />;
+    : <Chip icon={CircleDashed} text="Unreviewed" tone="border-amber-200 bg-amber-50 text-amber-800" />;
 }
 
-export function ModeBadge({ mode }: { mode: ExecutionMode }) {
+export function ModeBadge({ mode, dark = false }: { mode: ExecutionMode; dark?: boolean }) {
   const m = {
-    demo: { icon: FlaskConical, tone: "border-indigo-200 bg-indigo-50 text-indigo-800" },
-    agent: { icon: Bot, tone: "border-teal-200 bg-teal-50 text-teal-800" },
-    rules_only: { icon: ListChecks, tone: "border-amber-300 bg-amber-50 text-amber-900" },
+    demo: {
+      icon: FlaskConical,
+      tone: dark ? "border-indigo-400/30 bg-indigo-500/10 text-indigo-300" : "border-indigo-200 bg-indigo-50 text-indigo-800",
+    },
+    agent: {
+      icon: Bot,
+      tone: dark ? "border-teal-500/30 bg-teal-500/10 text-teal-300" : "border-teal-200 bg-teal-50 text-teal-800",
+    },
+    rules_only: {
+      icon: ListChecks,
+      tone: dark ? "border-amber-400/30 bg-amber-500/10 text-amber-300" : "border-amber-300 bg-amber-50 text-amber-900",
+    },
   }[mode];
   return <Chip icon={m.icon} text={`Mode: ${MODE_LABEL[mode]}`} tone={m.tone} />;
 }

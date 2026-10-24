@@ -7,15 +7,54 @@ import { UploadPanel } from "../components/UploadPanel";
 import { Card, CardHeader, EmptyState, ErrorNotice, SkeletonRows } from "../components/ui";
 import { useAsync } from "../lib/useAsync";
 
-function StatTile({ label, value, icon: Icon, tone, hint }: { label: string; value: number | null; icon: LucideIcon; tone: string; hint?: string }) {
-  return (
-    <div className={`rounded-2xl p-4 ${tone}`}>
+function StatTile({
+  label,
+  value,
+  icon: Icon,
+  tone,
+  hint,
+  active,
+  onClick,
+}: {
+  label: string;
+  value: number | null;
+  icon: LucideIcon;
+  tone: string;
+  hint?: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wide opacity-80">{label}</p>
         <Icon className="h-5 w-5 opacity-80" aria-hidden />
       </div>
       <p className="mt-2 text-3xl font-semibold tracking-tight">{value ?? "…"}</p>
       {hint && <p className="mt-0.5 text-xs opacity-75">{hint}</p>}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={`${label}: ${value ?? "unknown"}`}
+        className={`w-full border text-left rounded-2xl p-3.5 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${tone} ${
+          active
+            ? "border-teal-600 ring-2 ring-teal-600/20 shadow-sm"
+            : "hover:shadow-md hover:scale-[1.01]"
+        }`}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={`rounded-2xl border border-transparent p-3.5 ${tone}`}>
+      {content}
     </div>
   );
 }
@@ -47,20 +86,71 @@ export function QueuePage({ onOpenCase }: { onOpenCase: (id: string) => void }) 
   });
   const filtering = query.trim() !== "" || assessment !== "all" || review !== "all";
 
+  const scrollToTable = () => {
+    document.getElementById("cases-title")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleTotalClick = () => {
+    setReview("all");
+    setAssessment("all");
+    scrollToTable();
+  };
+
+  const handleAwaitingClick = () => {
+    setReview("unreviewed");
+    scrollToTable();
+  };
+
+  const handleReviewedClick = () => {
+    setReview("reviewed");
+    scrollToTable();
+  };
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Investigations</h1>
-        <p className="mt-1 text-sm text-slate-600">Check a suspicious email, see why it was flagged, then record your decision.</p>
+    <div className="space-y-5">
+      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">Agent workspace</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Email investigations</h1>
+          <p className="mt-1 text-sm text-slate-600">Investigate reported emails, inspect the evidence, and record a human decision.</p>
+        </div>
+        <p className="max-w-sm text-xs leading-5 text-slate-500 sm:text-right">The agent proposes. A reviewer decides before quarantine, incident creation, or closure.</p>
       </div>
 
       <UploadPanel onOpenCase={onOpenCase} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Summary">
-        <StatTile label="Total reports" value={data ? stats.total : null} icon={Mail} tone="bg-accent-50 text-accent-700" />
-        <StatTile label="Awaiting review" value={data ? stats.awaiting : null} icon={Clock} tone="bg-amber-50 text-amber-900" />
-        <StatTile label="Related-report groups" value={data ? stats.groups : null} icon={Layers} tone="bg-indigo-50 text-indigo-800" hint="Similar emails" />
-        <StatTile label="Reviewed cases" value={data ? stats.reviewed : null} icon={BadgeCheck} tone="bg-teal-50 text-teal-800" />
+        <StatTile
+          label="Total reports"
+          value={data ? stats.total : null}
+          icon={Mail}
+          tone="bg-accent-50 text-accent-700"
+          active={review === "all" && assessment === "all"}
+          onClick={handleTotalClick}
+        />
+        <StatTile
+          label="Awaiting review"
+          value={data ? stats.awaiting : null}
+          icon={Clock}
+          tone="bg-amber-50 text-amber-900"
+          active={review === "unreviewed"}
+          onClick={handleAwaitingClick}
+        />
+        <StatTile
+          label="Related-report groups"
+          value={data ? stats.groups : null}
+          icon={Layers}
+          tone="bg-indigo-50 text-indigo-800"
+          hint="Similar emails"
+        />
+        <StatTile
+          label="Reviewed cases"
+          value={data ? stats.reviewed : null}
+          icon={BadgeCheck}
+          tone="bg-teal-50 text-teal-800"
+          active={review === "reviewed"}
+          onClick={handleReviewedClick}
+        />
       </div>
 
       <Card aria-labelledby="cases-title">

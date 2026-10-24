@@ -135,6 +135,19 @@ def test_reviewer_approval_creates_one_case_and_audit(conn):
     assert "approved_and_executed" in [e["event"] for e in db.list_audit(conn)]
 
 
+def test_reviewer_override_executes_action_for_reviewed_label(conn):
+    _, aid, _, _ = intake_with_assessment(conn)
+    result = db.decide(conn, "ravi", aid, "approve", "Verified independently.",
+                       reviewed_label="no_strong_indicators")
+    assert result["status"] == "executed"
+    (case,) = db.list_cases(conn)
+    assert case["case_type"] == "closure"
+    assert case["queue"] == "closed-reviewed"
+    approval = conn.execute("SELECT * FROM approvals").fetchone()
+    assert approval["reviewed_label"] == "no_strong_indicators"
+    assert approval["reviewed_action"] == "reviewed_closure"
+
+
 def test_double_approval_makes_one_case(conn):
     _, aid, _, _ = intake_with_assessment(conn)
     db.decide(conn, "ravi", aid, "approve")
