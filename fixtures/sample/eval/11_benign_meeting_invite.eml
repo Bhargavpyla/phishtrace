@@ -1,0 +1,23 @@
+From: "Anita R" <anita.r@acmecorp.example>
+To: employee@acmecorp.example
+Subject: Design review Thursday 3pm
+Date: Fri, 23 Oct 2026 10:35:00 +0530
+Message-ID: <11_benign_meeting_invite@acmecorp.example>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============3243036383367473610=="
+
+--===============3243036383367473610==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Invite attached. Agenda: https://wiki.acmecorp.example/design-review
+
+--===============3243036383367473610==
+Content-Type: text/calendar
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invite.ics"
+MIME-Version: 1.0
+
+QkVHSU46VkNBTEVOREFSCkVORDpWQ0FMRU5EQVIK
+
+--===============3243036383367473610==--

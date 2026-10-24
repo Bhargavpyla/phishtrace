@@ -1,0 +1,24 @@
+From: "Parcel Alerts" <notifications@parcel-track.example>
+To: employee@acmecorp.example
+Subject: Your parcel is on its way
+Date: Fri, 23 Oct 2026 09:05:00 +0530
+Message-ID: <05_ambiguous_parcel_third_party@parcel-track.example>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============6333842436363013474=="
+
+--===============6333842436363013474==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============6333842436363013474==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>Your parcel is out for delivery.</p><p><a href=3D"https://tracking-portal.=
+example/12345">Track your parcel</a></p>
+
+--===============6333842436363013474==--

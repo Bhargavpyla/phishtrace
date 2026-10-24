@@ -1,0 +1,25 @@
+From: "Acme Corp CEO" <ceo@secure-mailer.example>
+To: employee@acmecorp.example
+Subject: Quick favour, are you at your desk?
+Date: Fri, 23 Oct 2026 08:35:00 +0530
+Message-ID: <03_phish_ceo_replyto@secure-mailer.example>
+Reply-To: payments@wire-desk.example
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============5949102834130560445=="
+
+--===============5949102834130560445==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============5949102834130560445==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>I need a task handled discreetly. Confirm details here: <a href=3D"https:/=
+/wire-desk.example/confirm">https://hr.acmecorp.example/confirm</a></p>
+
+--===============5949102834130560445==--

@@ -1,0 +1,24 @@
+From: "HR Team" <hr@acmecorp.example>
+To: employee@acmecorp.example
+Subject: Annual engagement survey
+Date: Fri, 23 Oct 2026 10:20:00 +0530
+Message-ID: <10_benign_hr_survey_third_party@acmecorp.example>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============1919967850416401033=="
+
+--===============1919967850416401033==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============1919967850416401033==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>The annual engagement survey is open until the end of next month.</p><p><a=
+ href=3D"https://surveys-demo.example/acmecorp/2026">Take the survey</a></p>
+
+--===============1919967850416401033==--

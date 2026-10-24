@@ -1,0 +1,28 @@
+From: "IT Support" <helpdesk@acme-corp-login.example>
+To: employee@acmecorp.example
+Subject: Action required: verify your AcmeCorp password
+Date: Fri, 23 Oct 2026 08:05:00 +0530
+Message-ID: <01_phish_lookalike_reset@acme-corp-login.example>
+Reply-To: reset@mailbox-verify.example
+Authentication-Results:
+ mx.acmecorp.example; spf=fail smtp.mailfrom=acme-corp-login.example
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============3604524159958366124=="
+
+--===============3604524159958366124==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Your password expires today. Visit https://acme-corp-login.example/reset to k=
+eep your account.
+
+--===============3604524159958366124==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>Your password expires today.</p><p><a href=3D"https://acme-corp-login.exam=
+ple/reset">https://portal.acmecorp.example/reset</a></p>
+
+--===============3604524159958366124==--

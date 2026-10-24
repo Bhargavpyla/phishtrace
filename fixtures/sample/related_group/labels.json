@@ -1,0 +1,5 @@
+{
+  "r1_reviewed_original.eml": "likely_phishing",
+  "r2_same_pattern.eml": "likely_phishing",
+  "r3_changed_destination.eml": "likely_phishing"
+}

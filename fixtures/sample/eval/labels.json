@@ -1,0 +1,14 @@
+{
+  "01_phish_lookalike_reset.eml": "likely_phishing",
+  "02_phish_invoice_double_extension.eml": "likely_phishing",
+  "03_phish_ceo_replyto.eml": "likely_phishing",
+  "04_phish_hidden_ai_instruction.eml": "likely_phishing",
+  "05_ambiguous_parcel_third_party.eml": "needs_investigation",
+  "06_ambiguous_vendor_invoice.eml": "needs_investigation",
+  "07_ambiguous_shared_document.eml": "needs_investigation",
+  "08_ambiguous_many_links.eml": "needs_investigation",
+  "09_benign_newsletter.eml": "no_strong_indicators",
+  "10_benign_hr_survey_third_party.eml": "no_strong_indicators",
+  "11_benign_meeting_invite.eml": "no_strong_indicators",
+  "12_benign_urgent_it_notice.eml": "no_strong_indicators"
+}

@@ -1,0 +1,11 @@
+From: "Billing" <billing@supplies-direct.example>
+To: employee@acmecorp.example
+Subject: Invoice 4471 - action required
+Date: Fri, 23 Oct 2026 09:20:00 +0530
+Message-ID: <06_ambiguous_vendor_invoice@supplies-direct.example>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi, please find last month's invoice. Action required: review and pay at http=
+s://pay.supplies-direct.example/inv/4471

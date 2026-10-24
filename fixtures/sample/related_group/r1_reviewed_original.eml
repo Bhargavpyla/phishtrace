@@ -1,0 +1,25 @@
+From: "IT Support" <helpdesk@acme-corp-login.example>
+To: employee@acmecorp.example
+Subject: Action required: verify your AcmeCorp password
+Date: Fri, 23 Oct 2026 08:00:00 +0530
+Message-ID: <r1_reviewed_original@acme-corp-login.example>
+Reply-To: reset@mailbox-verify.example
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============2828544332372544447=="
+
+--===============2828544332372544447==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============2828544332372544447==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>Your password expires today.</p><p><a href=3D"https://acme-corp-login.exam=
+ple/reset">https://portal.acmecorp.example/reset</a></p>
+
+--===============2828544332372544447==--

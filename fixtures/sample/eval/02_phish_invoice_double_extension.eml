@@ -1,0 +1,24 @@
+From: "AcmeCorp Billing" <billing@acmecorp-payments.example>
+To: employee@acmecorp.example
+Subject: FINAL NOTICE: overdue invoice 88231
+Date: Fri, 23 Oct 2026 08:20:00 +0530
+Message-ID: <02_phish_invoice_double_extension@acmecorp-payments.example>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="===============7700682418637137039=="
+
+--===============7700682418637137039==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Your account will be suspended immediately unless the attached invoice is set=
+tled. Action required.
+
+--===============7700682418637137039==
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invoice_88231.pdf.exe"
+MIME-Version: 1.0
+
+TVqQACBzeW50aGV0aWMgcGxhY2Vob2xkZXI=
+
+--===============7700682418637137039==--

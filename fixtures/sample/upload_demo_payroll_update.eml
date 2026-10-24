@@ -1,0 +1,26 @@
+From: "AcmeCorp Payroll" <payroll@acmecorp-hr-portal.example>
+Reply-To: payroll-help@secure-forms.example
+To: employee@acmecorp.example
+Subject: Action required: confirm your bank details before Friday payroll
+Date: Sat, 24 Oct 2026 10:12:00 +0530
+Message-ID: <payroll-demo-1@acmecorp-hr-portal.example>
+MIME-Version: 1.0
+Authentication-Results: mx.acmecorp.example; spf=softfail smtp.mailfrom=acmecorp-hr-portal.example
+Content-Type: multipart/alternative; boundary="b-demo-1"
+
+--b-demo-1
+Content-Type: text/plain; charset=utf-8
+
+Your payroll payment will be held unless you confirm your bank details within 24 hours.
+Confirm here: https://acmecorp-hr-portal.example/confirm
+
+--b-demo-1
+Content-Type: text/html; charset=utf-8
+
+<html><body>
+<p>Hello,</p>
+<p>Your payroll payment will be <b>held</b> unless you confirm your bank details within 24 hours.</p>
+<p><a href="https://acmecorp-hr-portal.example/confirm">https://hr.acmecorp.example/payroll/confirm</a></p>
+<p>Payroll Team</p>
+</body></html>
+--b-demo-1--

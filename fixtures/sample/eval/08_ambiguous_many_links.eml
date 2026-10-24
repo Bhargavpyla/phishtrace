@@ -1,0 +1,42 @@
+From: "Digest" <digest@newsletter-hub.example>
+To: employee@acmecorp.example
+Subject: Your weekly digest
+Date: Fri, 23 Oct 2026 09:50:00 +0530
+Message-ID: <08_ambiguous_many_links@newsletter-hub.example>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============6565651676292784270=="
+
+--===============6565651676292784270==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============6565651676292784270==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>This week's reading:</p><ul><li><a href=3D"https://newsletter-hub.example/=
+p/1">Article 1</a></li><li><a href=3D"https://newsletter-hub.example/p/2">Art=
+icle 2</a></li><li><a href=3D"https://newsletter-hub.example/p/3">Article 3</=
+a></li><li><a href=3D"https://newsletter-hub.example/p/4">Article 4</a></li><=
+li><a href=3D"https://newsletter-hub.example/p/5">Article 5</a></li><li><a hr=
+ef=3D"https://newsletter-hub.example/p/6">Article 6</a></li><li><a href=3D"ht=
+tps://newsletter-hub.example/p/7">Article 7</a></li><li><a href=3D"https://ne=
+wsletter-hub.example/p/8">Article 8</a></li><li><a href=3D"https://newsletter=
+-hub.example/p/9">Article 9</a></li><li><a href=3D"https://newsletter-hub.exa=
+mple/p/10">Article 10</a></li><li><a href=3D"https://newsletter-hub.example/p=
+/11">Article 11</a></li><li><a href=3D"https://newsletter-hub.example/p/12">A=
+rticle 12</a></li><li><a href=3D"https://newsletter-hub.example/p/13">Article=
+ 13</a></li><li><a href=3D"https://newsletter-hub.example/p/14">Article 14</a=
+></li><li><a href=3D"https://newsletter-hub.example/p/15">Article 15</a></li>=
+<li><a href=3D"https://newsletter-hub.example/p/16">Article 16</a></li><li><a=
+ href=3D"https://newsletter-hub.example/p/17">Article 17</a></li><li><a href=
+=3D"https://newsletter-hub.example/p/18">Article 18</a></li><li><a href=3D"ht=
+tps://newsletter-hub.example/p/19">Article 19</a></li><li><a href=3D"https://=
+newsletter-hub.example/p/20">Article 20</a></li><li><a href=3D"https://newsle=
+tter-hub.example/p/21">Article 21</a></li></ul>
+
+--===============6565651676292784270==--

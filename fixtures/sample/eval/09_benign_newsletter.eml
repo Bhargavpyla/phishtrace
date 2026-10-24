@@ -1,0 +1,12 @@
+From: "Vendor News" <newsletter@vendor-news.example>
+To: employee@acmecorp.example
+Subject: Issue 42: product updates
+Date: Fri, 23 Oct 2026 10:05:00 +0530
+Message-ID: <09_benign_newsletter@vendor-news.example>
+Authentication-Results:
+ mx.acmecorp.example; spf=pass smtp.mailfrom=vendor-news.example
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+
+This month's product updates are online: https://vendor-news.example/issue-42

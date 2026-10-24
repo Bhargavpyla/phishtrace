@@ -1,0 +1,13 @@
+From: "IT Support" <helpdesk@acme-corp-login.example>
+To: employee@acmecorp.example
+Subject: Password expires today - reset now
+Date: Sat, 24 Oct 2026 08:00:00 +0530
+Message-ID: <r2_same_pattern@acme-corp-login.example>
+Reply-To: reset@mailbox-verify.example
+Authentication-Results: mx.acmecorp.example; spf=pass
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Your password expires today. Reset it immediately: https://acme-corp-login.ex=
+ample/reset

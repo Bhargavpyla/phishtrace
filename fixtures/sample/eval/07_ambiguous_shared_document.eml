@@ -1,0 +1,26 @@
+From: "Priya N" <priya.n@docs-share.example>
+To: employee@acmecorp.example
+Subject: Shared with you: Q4 vendor list
+Date: Fri, 23 Oct 2026 09:35:00 +0530
+Message-ID: <07_ambiguous_shared_document@docs-share.example>
+Authentication-Results:
+ mx.acmecorp.example; spf=pass smtp.mailfrom=docs-share.example
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============0640720761877722670=="
+
+--===============0640720761877722670==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+(see HTML version)
+
+--===============0640720761877722670==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>Priya shared a document with you.</p><p><a href=3D"https://docs-share.exam=
+ple/d/Q4-vendors">View document</a></p>
+
+--===============0640720761877722670==--

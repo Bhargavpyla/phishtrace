@@ -1,0 +1,16 @@
+folder,file,expected_label,expected_signals,rationale
+eval,01_phish_lookalike_reset.eml,likely_phishing,lookalike_domain;link_text_mismatch;reply_to_mismatch,Sender and destination imitate acmecorp.example; link text names the real domain.
+eval,02_phish_invoice_double_extension.eml,likely_phishing,lookalike_domain;risky_attachment;urgency_language,Executable disguised as a PDF from a lookalike billing domain.
+eval,03_phish_ceo_replyto.eml,likely_phishing,reply_to_mismatch;link_text_mismatch,Executive display name from an unrelated domain; replies go to a third domain.
+eval,04_phish_hidden_ai_instruction.eml,likely_phishing,instruction_like_text;hidden_text;link_text_mismatch,Hidden text tries to steer an AI reviewer; link text/destination mismatch.
+eval,05_ambiguous_parcel_third_party.eml,needs_investigation,third_party_destination;no_auth_headers,Link goes to a partner-looking domain; legitimate delivery services do this. Cannot confirm either way.
+eval,06_ambiguous_vendor_invoice.eml,needs_investigation,urgency_language(1);unknown_vendor_link,Unknown vendor asks for payment through a link; no technical indicator.
+eval,07_ambiguous_shared_document.eml,needs_investigation,external_sender;generic_link_text;contradictory_auth,Reported SPF pass (unverified) but unfamiliar sender and shared-document link.
+eval,08_ambiguous_many_links.eml,needs_investigation,"analysis_incomplete(21 links, 20 analysed)",More links than the analyser covers; the system must not close this as clean.
+eval,09_benign_newsletter.eml,no_strong_indicators,none,Link points to the sender's own domain; plain wording.
+eval,10_benign_hr_survey_third_party.eml,no_strong_indicators,third_party_destination,"Plain-words link to a survey vendor, sent from an internal address. Differing destination is a signal only."
+eval,11_benign_meeting_invite.eml,no_strong_indicators,none,"Internal sender, internal link, calendar attachment (not executable)."
+eval,12_benign_urgent_it_notice.eml,no_strong_indicators,urgency_language(2) only,Legitimate maintenance notice with pressure wording; urgency alone is weak and must not trigger an incident.
+related_group,r1_reviewed_original.eml,likely_phishing,lookalike_domain;link_text_mismatch;reply_to_mismatch,Original report; imagine a reviewer confirmed it.
+related_group,r2_same_pattern.eml,likely_phishing,lookalike_domain;reply_to_mismatch,"Same sender, Reply-To and destination as r1; evidence is reusable, authentication differs."
+related_group,r3_changed_destination.eml,likely_phishing,lookalike_domain;link_text_mismatch,"Similar wording but a NEW destination domain and sender subdomain: fresh checks required, nothing reusable."
