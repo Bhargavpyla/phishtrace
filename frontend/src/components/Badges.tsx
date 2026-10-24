@@ -3,24 +3,25 @@ import type { Assessment, Evidence, ExecutionMode, FindingType, ReviewStatus, To
 import { ASSESSMENT_LABEL, FINDING_TYPE_LABEL, MODE_LABEL } from "../lib/labels";
 
 /** Status chips always carry an icon and text so meaning never depends on colour alone. */
-function Chip({ icon: Icon, text, tone }: { icon: LucideIcon; text: string; tone: string }) {
+function Chip({ icon: Icon, text, tone, size = "sm" }: { icon: LucideIcon; text: string; tone: string; size?: "sm" | "lg" }) {
+  const dims = size === "lg" ? "gap-1.5 px-3 py-1 text-sm" : "gap-1 px-2 py-0.5 text-xs";
   return (
-    <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${tone}`}>
-      <Icon className="h-3.5 w-3.5" aria-hidden />
+    <span className={`inline-flex items-center whitespace-nowrap rounded-full border font-medium ${dims} ${tone}`}>
+      <Icon className={size === "lg" ? "h-4 w-4" : "h-3.5 w-3.5"} aria-hidden />
       {text}
     </span>
   );
 }
 
-const ASSESS_STYLE: Record<Assessment, { icon: LucideIcon; tone: string }> = {
-  suspicious: { icon: ShieldAlert, tone: "border-red-200 bg-red-50 text-red-800" },
-  likely_benign: { icon: CircleCheck, tone: "border-teal-200 bg-teal-50 text-teal-800" },
-  needs_review: { icon: TriangleAlert, tone: "border-amber-300 bg-amber-50 text-amber-900" },
+export const ASSESS_STYLE: Record<Assessment, { icon: LucideIcon; tone: string; panel: string }> = {
+  suspicious: { icon: ShieldAlert, tone: "border-red-200 bg-red-50 text-red-800", panel: "border-red-200 bg-red-50/60" },
+  likely_benign: { icon: CircleCheck, tone: "border-teal-200 bg-teal-50 text-teal-800", panel: "border-teal-200 bg-teal-50/60" },
+  needs_review: { icon: TriangleAlert, tone: "border-amber-300 bg-amber-50 text-amber-900", panel: "border-amber-200 bg-amber-50/60" },
 };
 
-export function AssessmentBadge({ value }: { value: Assessment }) {
+export function AssessmentBadge({ value, size }: { value: Assessment; size?: "sm" | "lg" }) {
   const s = ASSESS_STYLE[value];
-  return <Chip icon={s.icon} text={ASSESSMENT_LABEL[value]} tone={s.tone} />;
+  return <Chip icon={s.icon} text={ASSESSMENT_LABEL[value]} tone={s.tone} size={size} />;
 }
 
 export function ReviewBadge({ value }: { value: ReviewStatus }) {

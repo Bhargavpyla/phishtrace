@@ -2,19 +2,20 @@ import { FlaskConical, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useApp } from "../api/context";
 import type { Metrics } from "../api/types";
-import { Button, Card, CardHeader, ConfirmDialog, ErrorNotice, Notice, Spinner } from "../components/ui";
+import { Button, Card, CardHeader, ConfirmDialog, ErrorNotice, Notice, SkeletonRows } from "../components/ui";
 import { formatDuration } from "../lib/format";
 import { useAsync } from "../lib/useAsync";
 
 const CALC_KEY = "phishtrace.calc";
 
 function Metric({ label, value, tag }: { label: string; value: string; tag: "Observed" | "Not measured" }) {
+  const measured = tag === "Observed";
   return (
-    <Card as="div" className="p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold ${tag === "Not measured" ? "text-slate-500" : "text-slate-900"}`}>{value}</p>
+    <div className={`rounded-2xl border p-4 ${measured ? "border-slate-200/70 bg-white shadow-card" : "border-dashed border-slate-300 bg-slate-50"}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className={`mt-1 text-2xl font-semibold tracking-tight ${measured ? "text-slate-900" : "text-slate-500"}`}>{value}</p>
       <p className="mt-0.5 text-xs text-slate-500">{tag}</p>
-    </Card>
+    </div>
   );
 }
 
@@ -32,7 +33,7 @@ function NumberField({ id, label, tag, value, onChange, disabled, hint }: {
       </label>
       <input id={id} type="number" min={0} step="any" inputMode="decimal" value={value} disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm disabled:bg-slate-50 disabled:text-slate-600" />
+        className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-50 disabled:text-slate-600" />
       {hint && <p className="mt-0.5 text-xs text-slate-500">{hint}</p>}
     </div>
   );
@@ -72,10 +73,10 @@ function Calculator({ m }: { m: Metrics }) {
   };
 
   return (
-    <Card aria-labelledby="calc-title">
+    <Card aria-labelledby="calc-title" className="overflow-hidden">
       <CardHeader id="calc-title" title="Savings calculator"
         subtitle="Entered values are assumptions; measured values are observed. Results can be zero or negative." />
-      <div className="grid gap-4 p-4 sm:grid-cols-2">
+      <div className="grid gap-4 px-5 pb-5 sm:grid-cols-2">
         <NumberField id="calc-baseline" label="Manual baseline minutes per case" tag="Assumption" value={baseline} onChange={setBaseline} />
         {assistedObserved
           ? <NumberField id="calc-assisted" label="Assisted review minutes per case" tag="Observed" value={String(m.analystReviewMinutes)} onChange={() => undefined} disabled />
@@ -85,7 +86,7 @@ function Calculator({ m }: { m: Metrics }) {
           ? <NumberField id="calc-cases" label="Cases reviewed" tag="Observed" value={String(m.casesReviewed)} onChange={() => undefined} disabled />
           : <NumberField id="calc-cases" label="Cases in scope" tag="Assumption" value={cases} onChange={setCases} />}
       </div>
-      <div className="border-t border-slate-100 p-4" aria-live="polite">
+      <div className="border-t border-slate-100 bg-slate-50/60 p-5" aria-live="polite">
         {!ready ? (
           <p className="text-sm text-slate-600">Enter the missing values to see an estimate. Nothing is calculated from guesses.</p>
         ) : (
@@ -110,9 +111,12 @@ export function ImpactPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-slate-900">Review &amp; Impact</h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Review &amp; impact</h1>
+        <p className="mt-1 text-sm text-slate-600">What has been investigated and reviewed so far. Anything not measured says so.</p>
+      </div>
       {source === "demo" && <Notice tone="warn"><FlaskConical className="mr-1 inline h-3.5 w-3.5" aria-hidden />Demo data: these figures are computed from the sample cases, not from real investigations.</Notice>}
-      {loading && <Spinner label="Loading metrics…" />}
+      {loading && <Card><SkeletonRows rows={3} label="Loading metrics…" /></Card>}
       {error && <ErrorNotice title="Could not load metrics" message={error} onRetry={reload} />}
       {data && (
         <>
@@ -138,9 +142,9 @@ export function ImpactPage() {
       )}
 
       {source === "demo" && (
-        <Card aria-labelledby="demo-title">
+        <Card aria-labelledby="demo-title" className="overflow-hidden">
           <CardHeader id="demo-title" title="Demo data" subtitle="Reviews made in demo mode are stored in this browser only." />
-          <div className="p-4">
+          <div className="px-5 pb-5">
             <Button onClick={() => setConfirming(true)} disabled={!demo.hasLocalData()}><Trash2 className="h-4 w-4" aria-hidden /> Clear saved demo reviews</Button>
             {!demo.hasLocalData() && <p className="mt-2 text-xs text-slate-500">No locally saved demo reviews.</p>}
           </div>

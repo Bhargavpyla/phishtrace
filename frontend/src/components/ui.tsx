@@ -1,22 +1,25 @@
-import { Check, CircleAlert, Copy, Loader2, X } from "lucide-react";
+import { Check, ChevronDown, CircleAlert, Copy, Loader2, X } from "lucide-react";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 export function Card({ children, className = "", as: Tag = "section", ...rest }: {
   children: ReactNode; className?: string; as?: "section" | "div" | "article"; "aria-labelledby"?: string;
 }) {
   return (
-    <Tag className={`rounded-lg border border-slate-200 bg-white shadow-card ${className}`} {...rest}>
+    <Tag className={`rounded-2xl border border-slate-200/70 bg-white shadow-card ${className}`} {...rest}>
       {children}
     </Tag>
   );
 }
 
-export function CardHeader({ id, title, subtitle, action }: { id?: string; title: ReactNode; subtitle?: ReactNode; action?: ReactNode }) {
+export function CardHeader({ id, title, subtitle, action, icon }: { id?: string; title: ReactNode; subtitle?: ReactNode; action?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-2 border-b border-slate-100 px-4 py-3">
-      <div className="min-w-0">
-        <h2 id={id} className="text-sm font-semibold text-slate-900">{title}</h2>
-        {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
+    <div className="flex flex-wrap items-start justify-between gap-3 px-5 pb-3 pt-5">
+      <div className="flex min-w-0 items-start gap-3">
+        {icon && <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">{icon}</span>}
+        <div className="min-w-0">
+          <h2 id={id} className="text-base font-semibold text-slate-900">{title}</h2>
+          {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
+        </div>
       </div>
       {action}
     </div>
@@ -27,7 +30,7 @@ type BtnProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" 
 
 export function Button({ variant = "secondary", busy, className = "", children, disabled, ...rest }: BtnProps) {
   const styles = {
-    primary: "bg-teal-600 text-white hover:bg-teal-700 border-transparent",
+    primary: "bg-teal-600 text-white shadow-sm hover:bg-teal-700 active:bg-teal-800 border-transparent",
     secondary: "bg-white text-slate-800 hover:bg-slate-50 border-slate-300",
     ghost: "bg-transparent text-slate-700 hover:bg-slate-100 border-transparent",
     danger: "bg-red-600 text-white hover:bg-red-700 border-transparent",
@@ -36,12 +39,26 @@ export function Button({ variant = "secondary", busy, className = "", children, 
     <button
       type="button"
       disabled={disabled || busy}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`}
       {...rest}
     >
       {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
       {children}
     </button>
+  );
+}
+
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <div aria-hidden className={`animate-pulse rounded-lg bg-slate-200/70 ${className}`} />;
+}
+
+/** Placeholder rows shown while a list loads. */
+export function SkeletonRows({ rows = 4, label }: { rows?: number; label: string }) {
+  return (
+    <div role="status" aria-label={label} className="space-y-3 p-5">
+      {Array.from({ length: rows }, (_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+      <span className="sr-only">{label}</span>
+    </div>
   );
 }
 
@@ -55,9 +72,9 @@ export function Spinner({ label }: { label: string }) {
 
 export function EmptyState({ icon, title, children }: { icon?: ReactNode; title: string; children?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
-      {icon && <div className="text-slate-400">{icon}</div>}
-      <p className="text-sm font-medium text-slate-800">{title}</p>
+    <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+      {icon && <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">{icon}</div>}
+      <p className="text-base font-semibold text-slate-900">{title}</p>
       {children && <div className="max-w-md text-sm text-slate-600">{children}</div>}
     </div>
   );
@@ -65,10 +82,10 @@ export function EmptyState({ icon, title, children }: { icon?: ReactNode; title:
 
 export function ErrorNotice({ title = "Something went wrong", message, onRetry }: { title?: string; message: string; onRetry?: () => void }) {
   return (
-    <div role="alert" className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+    <div role="alert" className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
       <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
       <div className="min-w-0 flex-1">
-        <p className="font-medium">{title}</p>
+        <p className="font-semibold">{title}</p>
         <p className="mt-0.5 break-words">{message}</p>
       </div>
       {onRetry && <Button onClick={onRetry}>Retry</Button>}
@@ -78,7 +95,20 @@ export function ErrorNotice({ title = "Something went wrong", message, onRetry }
 
 export function Notice({ tone = "info", children }: { tone?: "info" | "warn"; children: ReactNode }) {
   const c = tone === "warn" ? "border-amber-300 bg-amber-50 text-amber-950" : "border-slate-200 bg-slate-50 text-slate-700";
-  return <p className={`rounded-md border px-3 py-2 text-xs ${c}`}>{children}</p>;
+  return <p className={`rounded-xl border px-3 py-2 text-sm ${c}`}>{children}</p>;
+}
+
+/** Collapsed-by-default section for technical detail. */
+export function Disclosure({ title, children, defaultOpen = false }: { title: ReactNode; children: ReactNode; defaultOpen?: boolean }) {
+  return (
+    <details open={defaultOpen} className="group rounded-xl border border-slate-200 bg-slate-50/60">
+      <summary className="flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
+        <span className="min-w-0">{title}</span>
+        <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="border-t border-slate-200 p-3">{children}</div>
+    </details>
+  );
 }
 
 /** Copies text to the clipboard. Used for URLs, which are never rendered as links. */
@@ -102,7 +132,7 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
       type="button"
       onClick={copy}
       aria-label={label}
-      className="inline-flex shrink-0 items-center gap-1 rounded border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+      className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs text-slate-700 transition-colors hover:bg-slate-50"
     >
       {done ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
       {done ? "Copied" : failed ? "Copy failed" : "Copy"}
@@ -121,10 +151,10 @@ export function ConfirmDialog({ title, body, confirmLabel, onConfirm, onCancel }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
       <div role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-body"
-        className="w-full max-w-sm rounded-lg bg-white p-5 shadow-xl">
+        className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-lift">
         <div className="flex items-start justify-between gap-2">
           <h2 id="confirm-title" className="text-base font-semibold text-slate-900">{title}</h2>
-          <button type="button" onClick={onCancel} aria-label="Close dialog" className="rounded p-1 text-slate-500 hover:bg-slate-100">
+          <button type="button" onClick={onCancel} aria-label="Close dialog" className="rounded-lg p-1 text-slate-500 hover:bg-slate-100">
             <X className="h-4 w-4" aria-hidden />
           </button>
         </div>

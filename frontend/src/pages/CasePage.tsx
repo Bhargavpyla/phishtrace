@@ -1,50 +1,52 @@
-import { ArrowLeft, FolderOpen, Info } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "../api/context";
 import type { Case } from "../api/types";
-import { AssessmentBadge, ModeBadge, ReviewBadge } from "../components/Badges";
+import { AssessmentCard } from "../components/AssessmentCard";
 import { EvidenceLedger } from "../components/EvidenceLedger";
 import { FindingsList } from "../components/FindingsList";
 import { RelatedComparisonPanel } from "../components/RelatedComparison";
 import { ReviewPanel } from "../components/ReviewPanel";
 import { ToolActivity } from "../components/ToolActivity";
-import { Button, Card, CardHeader, CopyButton, EmptyState, ErrorNotice, Spinner } from "../components/ui";
+import { Button, Card, CardHeader, CopyButton, Disclosure, ErrorNotice, Skeleton } from "../components/ui";
 import { formatTime, orDash } from "../lib/format";
 import { useAsync } from "../lib/useAsync";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (<><dt className="text-slate-500">{label}</dt><dd className="wrap-any min-w-0 text-slate-900">{children}</dd></>);
-}
-
 function CaseView({ c, onOpenCase }: { c: Case; onOpenCase: (id: string) => void }) {
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const [highlight, setHighlight] = useState<string | null>(null);
   const [current, setCurrent] = useState<Case>(c);
 
-  const select = (id: string) => {
-    // Re-selecting the same id must retrigger the highlight effect.
-    setHighlight(null);
-    requestAnimationFrame(() => setHighlight(id));
+  const toggleEvidence = (id: string) => {
+    const opening = !openIds.has(id);
+    setOpenIds((cur) => { const n = new Set(cur); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+    setHighlight(opening ? id : null);
   };
 
   return (
     <div className="space-y-6">
+      <AssessmentCard c={current} />
       <RelatedComparisonPanel current={current} onOpenCase={onOpenCase} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="min-w-0 space-y-6">
-          <Card aria-labelledby="email-title">
-            <CardHeader id="email-title" title="Email details" />
-            <div className="space-y-4 p-4">
+          <FindingsList findings={current.findings} evidence={current.evidence} openIds={openIds} onToggle={toggleEvidence} onOpenCase={onOpenCase} />
+          <EvidenceLedger evidence={current.evidence} openIds={openIds} highlightedId={highlight} onToggle={toggleEvidence} onOpenCase={onOpenCase} />
+        </div>
+
+        <div className="min-w-0 space-y-6">
+          <ReviewPanel c={current} onSaved={setCurrent} />
+
+          <Card aria-labelledby="email-title" className="overflow-hidden">
+            <CardHeader id="email-title" title="Email content" icon={<Mail className="h-4 w-4" aria-hidden />} subtitle="Shown as plain text. HTML is never rendered and links are never opened." />
+            <div className="space-y-4 px-5 pb-5">
               <dl className="grid grid-cols-[auto,1fr] gap-x-4 gap-y-1.5 text-sm">
-                <Field label="Subject">{orDash(current.subject, "(no subject)")}</Field>
-                <Field label="Sender">{orDash(current.sender)}</Field>
-                <Field label="Reply-To">{orDash(current.replyTo, "Not present")}</Field>
-                <Field label="Received">{formatTime(current.receivedAt)}</Field>
+                <dt className="text-slate-500">Reply-To</dt><dd className="wrap-any text-slate-900">{orDash(current.replyTo, "Not present")}</dd>
+                <dt className="text-slate-500">Received</dt><dd className="text-slate-900">{formatTime(current.receivedAt)}</dd>
               </dl>
               <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Plain-text preview</h3>
-                <pre className="wrap-any mt-1 max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-800">{current.preview || "No readable text body."}</pre>
-                <p className="mt-1 text-xs text-slate-500">Shown as text only. HTML from the email is never rendered.</p>
+                <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Message</h3>
+                <pre className="wrap-any mt-1 max-h-52 overflow-auto whitespace-pre-wrap rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-800">{current.preview || "No readable text body."}</pre>
               </div>
               <div>
                 <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Extracted URLs</h3>
@@ -52,90 +54,56 @@ function CaseView({ c, onOpenCase }: { c: Case; onOpenCase: (id: string) => void
                   <ul className="mt-1 space-y-1.5">
                     {current.urls.map((u) => (
                       <li key={u} className="flex items-start gap-2">
-                        <code className="wrap-any min-w-0 flex-1 rounded bg-slate-100 px-1.5 py-1 text-xs">{u}</code>
+                        <code className="wrap-any min-w-0 flex-1 rounded-lg bg-slate-100 px-2 py-1 text-xs">{u}</code>
                         <CopyButton text={u} label={`Copy URL ${u}`} />
                       </li>
                     ))}
                   </ul>
                 )}
-                <p className="mt-1 text-xs text-slate-500">URLs are not clickable and were never visited.</p>
+                <p className="mt-1 text-xs text-slate-500">Shown as text on purpose: these URLs were never visited.</p>
               </div>
             </div>
           </Card>
 
-          <Card aria-labelledby="assessment-title">
-            <CardHeader id="assessment-title" title="Proposed assessment" />
-            <div className="space-y-3 p-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <AssessmentBadge value={current.proposed} />
-                <ReviewBadge value={current.reviewStatus} />
-                <ModeBadge mode={current.mode} />
-                <span className="text-xs text-slate-600">Policy {current.policyVersion}</span>
-              </div>
-              {current.fallback && (
-                <p role="note" className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950">
-                  Rules-only fallback: the model was unavailable, so this proposal comes from parser findings alone.
-                </p>
-              )}
-              <p className="text-sm text-slate-800">{current.explanation}</p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Missing evidence</h3>
-                  {current.missingEvidence.length === 0 ? <p className="mt-1 text-sm text-slate-600">None recorded.</p> :
-                    <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-slate-800">{current.missingEvidence.map((m) => <li key={m}>{m}</li>)}</ul>}
-                </div>
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Limitations</h3>
-                  {current.limitations.length === 0 ? <p className="mt-1 text-sm text-slate-600">None recorded.</p> :
-                    <ul className="mt-1 list-disc space-y-1 pl-4 text-sm text-slate-800">{current.limitations.map((m) => <li key={m}>{m}</li>)}</ul>}
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <FindingsList findings={current.findings} onSelectEvidence={select} />
-          <ReviewPanel c={current} onSaved={setCurrent} />
-        </div>
-
-        <div className="min-w-0 space-y-6">
-          <EvidenceLedger evidence={current.evidence} highlightedId={highlight} onOpenCase={onOpenCase} />
-          <ToolActivity c={current} />
+          <Disclosure title="Technical details: investigation activity">
+            <ToolActivity c={current} />
+          </Disclosure>
         </div>
       </div>
     </div>
   );
 }
 
-export function CasePage({ caseId, onOpenCase, onBack }: { caseId: string | null; onOpenCase: (id: string) => void; onBack: () => void }) {
-  const { api, dataVersion } = useApp();
-  // dataVersion is intentionally not a dependency: a saved review updates CaseView locally, without a reload flash.
-  const { data, error, loading, reload } = useAsync(
-    () => (caseId ? api.getCase(caseId) : Promise.reject(new Error("No case selected."))), [api, caseId]);
-  void dataVersion;
+function CaseSkeleton() {
+  return (
+    <div role="status" aria-label="Loading case" className="space-y-6">
+      <Skeleton className="h-36 w-full rounded-2xl" />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="space-y-6"><Skeleton className="h-56 w-full rounded-2xl" /><Skeleton className="h-56 w-full rounded-2xl" /></div>
+        <div className="space-y-6"><Skeleton className="h-72 w-full rounded-2xl" /></div>
+      </div>
+      <span className="sr-only">Loading case…</span>
+    </div>
+  );
+}
 
-  if (!caseId) {
-    return (
-      <Card>
-        <EmptyState icon={<FolderOpen className="h-8 w-8" aria-hidden />} title="No case selected">
-          Choose a case from the Investigation Queue to see its findings, evidence and related reports.
-          <div className="mt-3"><Button variant="primary" onClick={onBack}>Go to Investigation Queue</Button></div>
-        </EmptyState>
-      </Card>
-    );
-  }
+export function CasePage({ caseId, onOpenCase, onBack }: { caseId: string; onOpenCase: (id: string) => void; onBack: () => void }) {
+  const { api } = useApp();
+  // A saved review updates CaseView locally, so dataVersion is deliberately not a dependency (no reload flash).
+  const { data, error, loading, reload } = useAsync(() => api.getCase(caseId), [api, caseId]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <Button variant="ghost" onClick={onBack}><ArrowLeft className="h-4 w-4" aria-hidden /> Queue</Button>
-        <h1 className="wrap-any min-w-0 flex-1 text-xl font-semibold text-slate-900">
-          Case Workspace · {caseId}{data ? ` · ${orDash(data.subject, "(no subject)")}` : ""}
-        </h1>
-      </div>
-      <p className="flex items-center gap-1 text-xs text-slate-500"><Info className="h-3.5 w-3.5" aria-hidden /> Findings cite evidence; a citation alone does not prove a conclusion. A human reviewer decides.</p>
-      {loading && <Spinner label="Loading case…" />}
+    <div className="space-y-5">
+      <Button variant="ghost" onClick={onBack} className="-ml-2"><ArrowLeft className="h-4 w-4" aria-hidden /> All investigations</Button>
+      <header>
+        <h1 className="wrap-any text-2xl font-semibold tracking-tight text-slate-900">{data ? orDash(data.subject, "(no subject)") : `Case ${caseId}`}</h1>
+        <p className="wrap-any mt-1 text-sm text-slate-600">
+          {data ? <>From <span className="font-medium text-slate-800">{orDash(data.sender)}</span> · Case {data.id}</> : "Loading…"}
+        </p>
+      </header>
+      {loading && <CaseSkeleton />}
       {error && <ErrorNotice title="Could not load this case" message={error} onRetry={reload} />}
-      {/* key remounts all case state (highlight, review draft) so nothing leaks between emails */}
+      {/* key remounts all case state (open evidence, review draft) so nothing leaks between emails */}
       {data && <CaseView key={data.id} c={data} onOpenCase={onOpenCase} />}
     </div>
   );
